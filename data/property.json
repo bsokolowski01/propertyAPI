@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "address": "7031 Christy Grove",
+    "description": "Fugit curatio stillicidium bardus utrimque acsi.",
+    "price": "670.47",
+    "rooms": 3,
+    "status": "sold",
+    "type": "apartment"
+  },
+  {
+    "id": 2,
+    "address": "1544 Connor Pass",
+    "description": "Cenaculum quas eveniet appono doloribus.",
+    "price": "184.44",
+    "rooms": 4,
+    "status": "rented",
+    "type": "house"
+  },
+  {
+    "id": 3,
+    "address": "7258 Center Road",
+    "description": "Admoneo decet adamo defluo.",
+    "price": "649.15",
+    "rooms": 2,
+    "status": "rented",
+    "type": "house"
+  },
+  {
+    "id": 4,
+    "address": "597 E 12th Street",
+    "description": "Absconditus casus dapifer tergum avaritia urbanus vorago ascit patria absorbeo.",
+    "price": "386.57",
+    "rooms": 1,
+    "status": "rented",
+    "type": "house"
+  },
+  {
+    "id": 5,
+    "address": "82946 N College Street",
+    "description": "Audeo aggero taceo decet articulus.",
+    "price": "879.94",
+    "rooms": 2,
+    "status": "sold",
+    "type": "apartment"
+  },
+  {
+    "id": 6,
+    "address": "380 Laurianne Meadows",
+    "description": "Condico quasi debitis tabgo eaque nihil.",
+    "price": "645.36",
+    "rooms": 5,
+    "status": "rented",
+    "type": "house"
+  },
+  {
+    "id": 7,
+    "address": "84795 Bins Fords",
+    "description": "Spoliatio thymbra creator aedificium civis verbera.",
+    "price": "213.38",
+    "rooms": 3,
+    "status": "rented",
+    "type": "apartment"
+  },
+  {
+    "id": 8,
+    "address": "985 Aditya Key",
+    "description": "Eos demulceo itaque illo temptatio summa.",
+    "price": "619.68",
+    "rooms": 3,
+    "status": "for_sale",
+    "type": "land"
+  },
+  {
+    "id": 9,
+    "address": "54112 Franey Circles",
+    "description": "Aspernatur utrimque virgo adficio subnecto.",
+    "price": "572.76",
+    "rooms": 5,
+    "status": "rented",
+    "type": "house"
+  },
+  {
+    "id": 10,
+    "address": "167 Fahey Drives",
+    "description": "Asporto alienus stillicidium viriliter abduco doloremque tonsor perspiciatis suppono.",
+    "price": "291.87",
+    "rooms": 5,
+    "status": "rented",
+    "type": "house"
+  }
+]
