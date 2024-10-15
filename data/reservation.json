@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "propertyId": 5,
+    "date": {
+      "start": "2024-10-15",
+      "end": "2024-10-18"
+    },
+    "status": "for rent"
+  }
+]

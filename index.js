@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 
-import { clientGenerator, propertyGenerator } from './generator.js';
+import { clientGenerator, propertyGenerator, clientIdGenerator } from './generator.js';
 const app = new express();
 
 app.use(express.json());
@@ -36,8 +36,8 @@ app.get('/client/:id', (req, res) => {
   });
 });
 
-
-app.post('/createReservation', (req, res) => {
+// Stworzenie rezerwacji
+app.put('/createReservation', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading reservations file:', err);
@@ -45,17 +45,24 @@ app.post('/createReservation', (req, res) => {
         }
 
         let reservations = [];
-        try {
-            reservations = JSON.parse(data);
-        } catch (parseError) {
-            console.error('Error parsing reservations data:', parseError);
-            return res.status(500).send('Error parsing reservations data');
+        if (data) {
+            try {
+                reservations = JSON.parse(data);
+            } catch (parseError) {
+                console.error('Error parsing reservations data:', parseError);
+                return res.status(500).send('Error parsing reservations data');
+            }
         }
 
-        const { propertyId, rooms, date } = req.body;
+        const { propertyId } = req.body;
 
-        if (typeof propertyId !== 'number' || typeof rooms !== 'number' || !date || typeof date.end !== 'string') {
-            return res.status(400).send({ error: 'Invalid reservation data format' });
+        if (typeof propertyId !== 'number') {
+            return res.status(400).send({ error: 'Specify id of property' });
+        }
+       
+        const existingReservation = reservations.find(r => r.propertyId === propertyId);
+        if (existingReservation) {
+            return res.status(400).send({ error: 'Property is already reserved' });
         }
 
         fs.readFile('data/property.json', 'utf8', (err, propertyData) => {
@@ -88,12 +95,10 @@ app.post('/createReservation', (req, res) => {
             const newReservation = {
                 id: newId,
                 propertyId,
-                rooms,
                 date: {
-                    start: new Date(),
-                    end: new Date(new Date().setDate(new Date().getDate() + 3))
+                    start: new Date().toISOString().split('T')[0],
+                    end: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().split('T')[0] // 3 days later
                 },
-                status: property.status
             };
 
             reservations.push(newReservation);

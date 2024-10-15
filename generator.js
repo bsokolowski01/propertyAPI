@@ -25,4 +25,8 @@ export const propertyGenerator = (id) => {
     }
 }
 
-
+export const clientIdGenerator = () => {
+    return {
+        clientId: faker.number.int({ min: 1, max: 10 }),
+    }
+}
