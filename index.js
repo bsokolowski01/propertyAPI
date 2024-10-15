@@ -1,28 +1,23 @@
 import express from 'express';
 import fs from 'fs';
 
-import { clientGenerator, propertyGenerator, reservationGenerator } from './generator.js';
+import { clientGenerator, propertyGenerator } from './generator.js';
 const app = new express();
 
 app.use(express.json());
 
 const clientData = []
 const propertyData = []
-const reservationData = []
-
 
 for (let id = 1; id <=10; id++) {
     clientData.push(clientGenerator(id));
     propertyData.push(propertyGenerator(id));
-    reservationData.push(reservationGenerator(id));
 }
 
 fs.writeFileSync('./data/client.json', JSON.stringify(clientData, null, 2));
 fs.writeFileSync('./data/property.json', JSON.stringify(propertyData, null, 2));
-fs.writeFileSync('./data/reservation.json', JSON.stringify(reservationData, null, 2));
 
-
-// Wyświetlanie wszystkich klientów po ich ID
+// Wyświetlanie klientów po ich ID
 app.get('/client/:id', (req, res) => {
   fs.readFile('data/client.json', 'utf8', (err, data) => {
       if (err) {
@@ -43,60 +38,77 @@ app.get('/client/:id', (req, res) => {
 
 
 app.post('/createReservation', (req, res) => {
-  fs.readFile("data/reservation.json", 'utf8', (err, data) => {
-      if (err) {
-          console.error('Error reading reservations file:', err);
-          return res.status(500).send('Error reading reservations data');
-      }
+    fs.readFile('data/reservation.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading reservations file:', err);
+            return res.status(500).send('Error reading reservations data');
+        }
 
-      let reservations = [];
-      try {
-          reservations = JSON.parse(data);
-      } catch (parseError) {
-          console.error('Error parsing reservations data:', parseError);
-          return res.status(500).send('Error parsing reservations data');
-      }
+        let reservations = [];
+        try {
+            reservations = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing reservations data:', parseError);
+            return res.status(500).send('Error parsing reservations data');
+        }
 
-      const { rooms, date, status } = req.body;
+        const { propertyId, rooms, date } = req.body;
 
-      if (typeof rooms !== 'number' || !date || typeof date.end !== 'string' || typeof status !== 'string') {
-          return res.status(400).send({ error: 'Invalid reservation data format' });
-      }
+        if (typeof propertyId !== 'number' || typeof rooms !== 'number' || !date || typeof date.end !== 'string') {
+            return res.status(400).send({ error: 'Invalid reservation data format' });
+        }
 
-      const startDate = new Date();
-      const endDate = new Date(date.end);
+        fs.readFile('data/property.json', 'utf8', (err, propertyData) => {
+            if (err) {
+                console.error('Error reading properties file:', err);
+                return res.status(500).send('Error reading properties data');
+            }
 
-      if (endDate < startDate) {
-          return res.status(400).send({ error: 'End date cannot be earlier and equal than start date' });
-      }
+            let properties = [];
+            try {
+                properties = JSON.parse(propertyData);
+            } catch (parseError) {
+                console.error('Error parsing properties data:', parseError);
+                return res.status(500).send('Error parsing properties data');
+            }
 
-      const lastId = reservations.length > 0 ? reservations[reservations.length - 1].id : 0;
-      const newId = lastId + 1;
+            const property = properties.find(p => p.id === propertyId);
 
-      const newReservation = {
-          id: newId,
-          rooms,
-          date: {
-              start: new Date(),
-          },
-          status
-      };
+            if (!property) {
+                return res.status(404).send({ error: 'Property not found' });
+            }
 
-      reservations.push(newReservation);
+            if (property.status !== 'for sale' && property.status !== 'for rent') {
+                return res.status(400).send({ error: 'Reservation can only be made for properties with status "for sale" or "for rent"' });
+            }
 
-      fs.writeFile("data/reservation.json", JSON.stringify(reservations, null, 2), (writeError) => {
-          if (writeError) {
-              console.error('Error writing reservations data:', writeError);
-              return res.status(500).send('Error saving reservation');
-          }
+            const lastId = reservations.length > 0 ? reservations[reservations.length - 1].id : 0;
+            const newId = lastId + 1;
 
-          res.status(201).send({ message: 'Reservation created successfully', reservation: newReservation });
-      });
-  });
+            const newReservation = {
+                id: newId,
+                propertyId,
+                rooms,
+                date: {
+                    start: new Date(),
+                    end: new Date(new Date().setDate(new Date().getDate() + 3))
+                },
+                status: property.status
+            };
+
+            reservations.push(newReservation);
+
+            fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
+                if (writeError) {
+                    console.error('Error writing reservations data:', writeError);
+                    return res.status(500).send('Error saving reservation');
+                }
+
+                res.status(201).send({ message: 'Reservation created successfully', reservation: newReservation });
+            });
+        });
+    });
 });
-
-
-
 
 app.listen(8989, () => {
     console.log('Started on 8989');
