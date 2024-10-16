@@ -36,8 +36,63 @@ app.get('/client/:id', (req, res) => {
   });
 });
 
+// Usuwanie klienta
+app.delete('/client/:id', (req, res) => {
+    fs.readFile('data/client.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let clients = JSON.parse(data);
+        const updatedClients = clients.filter(c => c.id != req.params.id);
+
+        if (clients.length === updatedClients.length) {
+            return res.status(404).send('Client not found');
+        }
+
+        fs.writeFile('data/client.json', JSON.stringify(updatedClients, null, 2), (writeError) => {
+            if (writeError) {
+                console.error('Error writing clients data:', writeError);
+                return res.status(500).send('Error deleting client');
+            }
+
+            res.status(200).send({ message: 'Client deleted successfully' });
+        });
+    });
+});
+
+// Aktualizacja nieruchomości
+app.put('/property/:id', (req, res) => {
+    fs.readFile('data/property.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let properties = JSON.parse(data);
+        const propertyIndex = properties.findIndex(p => p.id == req.params.id);
+
+        if (propertyIndex === -1) {
+            return res.status(404).send('Property not found');
+        }
+
+        const updatedProperty = { ...properties[propertyIndex], ...req.body };
+        properties[propertyIndex] = updatedProperty;
+
+        fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
+            if (writeError) {
+                console.error('Error writing properties data:', writeError);
+                return res.status(500).send('Error updating property');
+            }
+
+            res.status(200).send({ message: 'Property updated successfully', property: updatedProperty });
+        });
+    });
+});
+
 // Stworzenie rezerwacji
-app.put('/createReservation', (req, res) => {
+app.post('/reservation/create', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading reservations file:', err);
@@ -95,9 +150,10 @@ app.put('/createReservation', (req, res) => {
             const newReservation = {
                 id: newId,
                 propertyId,
+                clientId: clientIdGenerator().clientId,
                 date: {
-                    start: new Date().toISOString().split('T')[0],
-                    end: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().split('T')[0] // 3 days later
+                    start: new Date().toISOString(),
+                    end: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString() // 3 days later
                 },
             };
 
@@ -111,6 +167,77 @@ app.put('/createReservation', (req, res) => {
 
                 res.status(201).send({ message: 'Reservation created successfully', reservation: newReservation });
             });
+        });
+    });
+});
+
+// Wyświetlanie rezerwacji po ID
+app.get('/reservation/:id', (req, res) => {
+    fs.readFile('data/reservation.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let reservations = []
+
+        try {
+            reservations = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing reservations or reservations not found');
+            return res.status(500).send('Error parsing reservations or reservations not found');
+        }
+
+        const reservation = reservations.find(r => r.id == req.params.id);
+
+        if (reservation) {
+            res.json(reservation);
+        } else {
+            res.status(404).send('Reservation not found');
+        }
+    });
+});
+
+// Przedłużenie rezerwacji
+app.patch('/reservation/:id/extend', (req, res) => {
+    const { days } = req.body;
+
+    if (typeof days !== 'number' || days <= 0) {
+        return res.status(400).send({ error: 'Invalid number of days' });
+    }
+
+    fs.readFile('data/reservation.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let reservations = [];
+        try {
+            reservations = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing reservations or reservations not found');
+            return res.status(500).send('Error parsing reservations or reservations not found');
+        }
+
+        const reservationIndex = reservations.findIndex(r => r.id == req.params.id);
+
+        if (reservationIndex === -1) {
+            return res.status(404).send('Reservation not found');
+        }
+
+        const reservation = reservations[reservationIndex];
+        const endDate = new Date(reservation.date.end);
+        endDate.setDate(endDate.getDate() + days);
+        reservation.date.end = endDate.toISOString();
+
+        fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
+            if (writeError) {
+                console.error('Error writing reservations data:', writeError);
+                return res.status(500).send('Error updating reservation');
+            }
+
+            res.status(200).send({ message: 'Reservation extended successfully', reservation });
         });
     });
 });
