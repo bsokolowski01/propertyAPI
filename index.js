@@ -62,6 +62,74 @@ app.delete('/client/:id', (req, res) => {
     });
 });
 
+// Wyświetlanie nieruchomości z ceną za metr podaną przez użytkownika
+app.get('/property/price-per-meter/:price', (req, res) => {
+    const pricePerMeter = parseFloat(req.params.price);
+
+    if (isNaN(pricePerMeter) || pricePerMeter <= 0) {
+        return res.status(400).send({ error: 'Invalid price per meter' });
+    }
+
+    fs.readFile('data/property.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let properties = [];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing properties data:', parseError);
+            return res.status(500).send('Error parsing properties data');
+        }
+
+        const filteredProperties = properties.filter(p => {
+            if (p.pricePerMeter) {
+                const price = parseFloat(p.pricePerMeter.split(' ')[0]);
+                return price === pricePerMeter;
+            }
+            return false;
+        });
+
+        res.json(filteredProperties);
+    });
+});
+
+// Endpoint do wyświetlania nieruchomości z czynszem podanym przez użytkownika
+app.get('/properties/rent/:rent', (req, res) => {
+    const rent = parseFloat(req.params.rent);
+
+    if (isNaN(rent) || rent <= 0) {
+        return res.status(400).send({ error: 'Invalid rent' });
+    }
+
+    fs.readFile('data/property.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let properties = [];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing properties data:', parseError);
+            return res.status(500).send('Error parsing properties data');
+        }
+
+        const filteredProperties = properties.filter(p => {
+            if (p.rent) {
+                const rentValue = parseFloat(p.rent.split(' ')[0]);
+                return rentValue === rent;
+            }
+            return false;
+        });
+
+        res.json(filteredProperties);
+    });
+});
+
 // Aktualizacja nieruchomości
 app.put('/property/:id', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
