@@ -1,5 +1,7 @@
 import express from 'express';
 import fs from 'fs';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 import { clientGenerator, propertyGenerator, clientIdGenerator } from './generator.js';
 const app = new express();
@@ -17,7 +19,44 @@ for (let id = 1; id <=10; id++) {
 fs.writeFileSync('./data/client.json', JSON.stringify(clientData, null, 2));
 fs.writeFileSync('./data/property.json', JSON.stringify(propertyData, null, 2));
 
-// Wyświetlanie klientów po ich ID
+// Swagger setup
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Property API',
+            version: '1.0.0',
+            description: 'API for managing properties and reservations',
+        },
+        servers: [
+            {
+                url: 'http://localhost:8989',
+            },
+        ],
+    },
+    apis: ['./index.js'], // Path to the API docs
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+/**
+ * @swagger
+ * /client/{id}:
+ *   get:
+ *     summary: Get client by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Client data
+ *       404:
+ *         description: Client not found
+ */
 app.get('/client/:id', (req, res) => {
   fs.readFile('data/client.json', 'utf8', (err, data) => {
       if (err) {
@@ -36,7 +75,23 @@ app.get('/client/:id', (req, res) => {
   });
 });
 
-// Usuwanie klienta
+/**
+ * @swagger
+ * /client/{id}:
+ *   delete:
+ *     summary: Delete client by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Client deleted successfully
+ *       404:
+ *         description: Client not found
+ */
 app.delete('/client/:id', (req, res) => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
@@ -62,7 +117,23 @@ app.delete('/client/:id', (req, res) => {
     });
 });
 
-// Wyświetlanie nieruchomości z ceną za metr podaną przez użytkownika
+/**
+ * @swagger
+ * /property/price-per-meter/{price}:
+ *   get:
+ *     summary: Get properties with price per meter less than or equal to the specified value
+ *     parameters:
+ *       - in: path
+ *         name: price
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: List of properties
+ *       400:
+ *         description: Invalid price per meter
+ */
 app.get('/property/price-per-meter/:price', (req, res) => {
     const pricePerMeter = parseFloat(req.params.price);
 
@@ -87,7 +158,7 @@ app.get('/property/price-per-meter/:price', (req, res) => {
         const filteredProperties = properties.filter(p => {
             if (p.pricePerMeter) {
                 const price = parseFloat(p.pricePerMeter.split(' ')[0]);
-                return price === pricePerMeter;
+                return price <= pricePerMeter;
             }
             return false;
         });
@@ -96,8 +167,24 @@ app.get('/property/price-per-meter/:price', (req, res) => {
     });
 });
 
-// Endpoint do wyświetlania nieruchomości z czynszem podanym przez użytkownika
-app.get('/properties/rent/:rent', (req, res) => {
+/**
+ * @swagger
+ * /property/rent/{rent}:
+ *   get:
+ *     summary: Get properties with rent less than or equal to the specified value
+ *     parameters:
+ *       - in: path
+ *         name: rent
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: List of properties
+ *       400:
+ *         description: Invalid rent
+ */
+app.get('/property/rent/:rent', (req, res) => {
     const rent = parseFloat(req.params.rent);
 
     if (isNaN(rent) || rent <= 0) {
@@ -121,7 +208,7 @@ app.get('/properties/rent/:rent', (req, res) => {
         const filteredProperties = properties.filter(p => {
             if (p.rent) {
                 const rentValue = parseFloat(p.rent.split(' ')[0]);
-                return rentValue === rent;
+                return rentValue <= rent;
             }
             return false;
         });
@@ -130,7 +217,49 @@ app.get('/properties/rent/:rent', (req, res) => {
     });
 });
 
-// Aktualizacja nieruchomości
+/**
+ * @swagger
+ * /property/{id}:
+ *   put:
+ *     summary: Update property by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: address
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: description
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: price
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: rooms
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [ "for_sale", "sold", "rented" ]
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [ "house", "apartment", "land" ]
+ *     responses:
+ *       200:
+ *         description: Property updated successfully
+ *       404:
+ *         description: Property not found
+ */
 app.put('/property/:id', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
@@ -145,7 +274,7 @@ app.put('/property/:id', (req, res) => {
             return res.status(404).send('Property not found');
         }
 
-        const updatedProperty = { ...properties[propertyIndex], ...req.body };
+        const updatedProperty = { ...properties[propertyIndex], ...req.query };
         properties[propertyIndex] = updatedProperty;
 
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
@@ -159,7 +288,26 @@ app.put('/property/:id', (req, res) => {
     });
 });
 
-// Stworzenie rezerwacji
+/**
+ * @swagger
+ * /reservation/create:
+ *   post:
+ *     summary: Create a reservation
+ *     parameters:
+ *       - in: query
+ *         name: propertyId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: ID of the property to reserve
+ *     responses:
+ *       201:
+ *         description: Reservation created successfully
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Property not found
+ */
 app.post('/reservation/create', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
@@ -177,10 +325,10 @@ app.post('/reservation/create', (req, res) => {
             }
         }
 
-        const { propertyId } = req.body;
+        const propertyId = parseInt(req.query.propertyId, 10);
 
-        if (typeof propertyId !== 'number') {
-            return res.status(400).send({ error: 'Specify id of property' });
+        if (isNaN(propertyId)) {
+            return res.status(400).send({ error: 'Specify a valid property ID' });
         }
        
         const existingReservation = reservations.find(r => r.propertyId === propertyId);
@@ -239,7 +387,23 @@ app.post('/reservation/create', (req, res) => {
     });
 });
 
-// Wyświetlanie rezerwacji po ID
+/**
+ * @swagger
+ * /reservation/{id}:
+ *   get:
+ *     summary: Get reservation by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Reservation data
+ *       404:
+ *         description: Reservation not found
+ */
 app.get('/reservation/:id', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
@@ -266,11 +430,35 @@ app.get('/reservation/:id', (req, res) => {
     });
 });
 
-// Przedłużenie rezerwacji
+/**
+ * @swagger
+ * /reservation/{id}/extend:
+ *   patch:
+ *     summary: Extend reservation by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: days
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: Number of days to extend the reservation
+ *     responses:
+ *       200:
+ *         description: Reservation extended successfully
+ *       400:
+ *         description: Invalid number of days
+ *       404:
+ *         description: Reservation not found
+ */
 app.patch('/reservation/:id/extend', (req, res) => {
-    const { days } = req.body;
+    const days = parseInt(req.query.days, 10);
 
-    if (typeof days !== 'number' || days <= 0) {
+    if (isNaN(days) || days <= 0) {
         return res.status(400).send({ error: 'Invalid number of days' });
     }
 
