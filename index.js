@@ -3,7 +3,12 @@ import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
+
 import { clientGenerator, propertyGenerator, clientIdGenerator } from './generator.js';
+
+import { clientsIdRouter } from './routes/clientsByIdRoute.js';
+import { clientsRouter } from './routes/clientsRoute.js';
+
 const app = new express();
 
 app.use(express.json());
@@ -34,52 +39,21 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['./index.js'], // Path to the API docs
+    apis: ['routes/*.js', 'index.js'], 
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-/**
- * @swagger
- * /client/{id}:
- *   get:
- *     summary: Get client by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Client data
- *       404:
- *         description: Client not found
- */
-app.get('/client/:id', (req, res) => {
-  fs.readFile('data/client.json', 'utf8', (err, data) => {
-      if (err) {
-          res.status(500).send('Error reading data file');
-          return;
-      }
-
-      const clients = JSON.parse(data);
-      const client = clients.find(c => c.id == req.params.id);
-
-      if (client) {
-          res.json(client);
-      } else {
-          res.status(404).send('Client not found');
-      }
-  });
-});
+app.use("/client", clientsRouter);
+app.use("/client/:id", clientsIdRouter);
 
 /**
  * @swagger
  * /client/{id}:
  *   delete:
  *     summary: Delete client by ID
+ *     tags: [Client]
  *     parameters:
  *       - in: path
  *         name: id
@@ -117,11 +91,68 @@ app.delete('/client/:id', (req, res) => {
     });
 });
 
+
+/**
+ * @swagger
+ * /property/{id}:
+ *   delete:
+ *     summary: Delete a property by ID
+ *     tags: [Property]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The property ID
+ *     responses:
+ *       200:
+ *         description: Property deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Property deleted successfully
+ *       404:
+ *         description: Property not found
+ *       500:
+ *         description: Error deleting property
+ */
+app.delete('/property/:id', (req, res) => {
+    fs.readFile('data/property.json', 'utf8', (err, data) => {
+        if (err) {
+            res.status(500).send('Error reading data file');
+            return;
+        }
+
+        let properties = JSON.parse(data);
+        const updatedProperties = properties.filter(c => c.id != req.params.id);
+
+        if (properties.length === updatedProperties.length) {
+            return res.status(404).send('Property not found');
+        }
+
+        fs.writeFile('data/property.json', JSON.stringify(updatedProperties, null, 2), (writeError) => {
+            if (writeError) {
+                console.error('Error writing properties data:', writeError);
+                return res.status(500).send('Error deleting property');
+            }
+
+            res.status(200).send({ message: 'Property deleted successfully' });
+        });
+    });
+});
+
+
 /**
  * @swagger
  * /property/price-per-meter/{price}:
  *   get:
  *     summary: Get properties with price per meter less than or equal to the specified value
+ *     tags: [Property]
  *     parameters:
  *       - in: path
  *         name: price
@@ -172,6 +203,7 @@ app.get('/property/price-per-meter/:price', (req, res) => {
  * /property/rent/{rent}:
  *   get:
  *     summary: Get properties with rent less than or equal to the specified value
+ *     tags: [Property]
  *     parameters:
  *       - in: path
  *         name: rent
@@ -222,6 +254,7 @@ app.get('/property/rent/:rent', (req, res) => {
  * /property/{id}:
  *   put:
  *     summary: Update property by ID
+ *     tags: [Property]
  *     parameters:
  *       - in: path
  *         name: id
@@ -293,6 +326,7 @@ app.put('/property/:id', (req, res) => {
  * /reservation/create:
  *   post:
  *     summary: Create a reservation
+ *     tags: [Reservation]
  *     parameters:
  *       - in: query
  *         name: propertyId
@@ -392,6 +426,7 @@ app.post('/reservation/create', (req, res) => {
  * /reservation/{id}:
  *   get:
  *     summary: Get reservation by ID
+ *     tags: [Reservation]
  *     parameters:
  *       - in: path
  *         name: id
@@ -435,6 +470,7 @@ app.get('/reservation/:id', (req, res) => {
  * /reservation/{id}/extend:
  *   patch:
  *     summary: Extend reservation by ID
+ *     tags: [Reservation]
  *     parameters:
  *       - in: path
  *         name: id
@@ -500,4 +536,4 @@ app.patch('/reservation/:id/extend', (req, res) => {
 
 app.listen(8989, () => {
     console.log('Started on 8989');
-});
+}); 
