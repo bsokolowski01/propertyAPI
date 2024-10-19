@@ -2,7 +2,7 @@ import express from 'express';
 
 /**
  * @swagger
- * /client/{id}:
+ * /clients/{id}:
  *   get:
  *     summary: Get client by ID
  *     tags: [Client]

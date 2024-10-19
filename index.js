@@ -3,11 +3,15 @@ import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
-
 import { clientGenerator, propertyGenerator, clientIdGenerator } from './generator.js';
 
-import { clientsIdRouter } from './routes/clientsByIdRoute.js';
+import { clientsIdRouter } from './routes/clientByIdRoute.js';
 import { clientsRouter } from './routes/clientsRoute.js';
+import { clientsIdRouterDEL } from './routes/clientByIdRouteDEL.js';
+
+import { propertiesRouter } from './routes/propertiesRoute.js';
+import { propertyIdRouter } from './routes/propertyByIdRoute.js';
+import { propertyIdRouterDEL } from './routes/propertyByIdRouteDEL.js';
 
 const app = new express();
 
@@ -45,106 +49,13 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.use("/client", clientsRouter);
-app.use("/client/:id", clientsIdRouter);
+app.use("/clients", clientsRouter);
+app.use("/clients/:id", clientsIdRouter);
+app.use("/clients/:id", clientsIdRouterDEL); 
 
-/**
- * @swagger
- * /client/{id}:
- *   delete:
- *     summary: Delete client by ID
- *     tags: [Client]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Client deleted successfully
- *       404:
- *         description: Client not found
- */
-app.delete('/client/:id', (req, res) => {
-    fs.readFile('data/client.json', 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading data file');
-            return;
-        }
-
-        let clients = JSON.parse(data);
-        const updatedClients = clients.filter(c => c.id != req.params.id);
-
-        if (clients.length === updatedClients.length) {
-            return res.status(404).send('Client not found');
-        }
-
-        fs.writeFile('data/client.json', JSON.stringify(updatedClients, null, 2), (writeError) => {
-            if (writeError) {
-                console.error('Error writing clients data:', writeError);
-                return res.status(500).send('Error deleting client');
-            }
-
-            res.status(200).send({ message: 'Client deleted successfully' });
-        });
-    });
-});
-
-
-/**
- * @swagger
- * /property/{id}:
- *   delete:
- *     summary: Delete a property by ID
- *     tags: [Property]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: The property ID
- *     responses:
- *       200:
- *         description: Property deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Property deleted successfully
- *       404:
- *         description: Property not found
- *       500:
- *         description: Error deleting property
- */
-app.delete('/property/:id', (req, res) => {
-    fs.readFile('data/property.json', 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading data file');
-            return;
-        }
-
-        let properties = JSON.parse(data);
-        const updatedProperties = properties.filter(c => c.id != req.params.id);
-
-        if (properties.length === updatedProperties.length) {
-            return res.status(404).send('Property not found');
-        }
-
-        fs.writeFile('data/property.json', JSON.stringify(updatedProperties, null, 2), (writeError) => {
-            if (writeError) {
-                console.error('Error writing properties data:', writeError);
-                return res.status(500).send('Error deleting property');
-            }
-
-            res.status(200).send({ message: 'Property deleted successfully' });
-        });
-    });
-});
+app.use("/properties", propertiesRouter);
+app.use("/properties/:id", propertyIdRouter)
+app.use("/properties/:id", propertyIdRouterDEL);
 
 
 /**
