@@ -56,8 +56,8 @@ export const propertyIdRouter = express.Router();
  *       500:
  *         description: Error reading data file
  */
-propertyIdRouter.get('/', (req, res) => {
-    fs.readFile('data/properties.json', 'utf8', (err, data) => {
+propertyIdRouter.get('/properties/:id', (req, res) => {
+    fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');
             return;

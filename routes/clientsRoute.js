@@ -38,7 +38,7 @@ export const clientsRouter = express.Router();
  *         description: Error reading data file
  */
 
-clientsRouter.get('/', (req, res) => {
+clientsRouter.get('/clients', (req, res) => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');

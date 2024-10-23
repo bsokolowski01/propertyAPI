@@ -5,13 +5,17 @@ import swaggerUi from 'swagger-ui-express';
 
 import { clientGenerator, propertyGenerator, clientIdGenerator } from './generator.js';
 
-import { clientsIdRouter } from './routes/clientByIdRoute.js';
+import { clientIdRouter } from './routes/clientByIdRoute.js';
+import { clientRouterPOST } from './routes/clientRoutePOST.js';
 import { clientsRouter } from './routes/clientsRoute.js';
-import { clientsIdRouterDEL } from './routes/clientByIdRouteDEL.js';
+import { clientIdRouterDEL } from './routes/clientByIdRouteDEL.js';
+import { clientRouterPATCH } from './routes/clientByIdRoutePATCH.js';
 
 import { propertiesRouter } from './routes/propertiesRoute.js';
 import { propertyIdRouter } from './routes/propertyByIdRoute.js';
 import { propertyIdRouterDEL } from './routes/propertyByIdRouteDEL.js';
+import { propertyRouterPUT } from './routes/propertyRoutePUT.js';
+import { propertyRouterPOST } from './routes/propertyRoutePOST.js';
 
 const app = new express();
 
@@ -49,192 +53,22 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.use("/clients", clientsRouter);
-app.use("/clients/:id", clientsIdRouter);
-app.use("/clients/:id", clientsIdRouterDEL); 
+app.use("", clientsRouter);
+app.use("", clientIdRouter);
+app.use("", clientRouterPOST);
+app.use("", clientIdRouterDEL); 
+app.use("", clientRouterPATCH);
 
-app.use("/properties", propertiesRouter);
-app.use("/properties/:id", propertyIdRouter)
-app.use("/properties/:id", propertyIdRouterDEL);
+app.use("", propertiesRouter);
+app.use("", propertyIdRouter)
+app.use("", propertyIdRouterDEL);
+app.use("", propertyRouterPUT);
+app.use("", propertyRouterPOST);
 
-
-/**
- * @swagger
- * /property/price-per-meter/{price}:
- *   get:
- *     summary: Get properties with price per meter less than or equal to the specified value
- *     tags: [Property]
- *     parameters:
- *       - in: path
- *         name: price
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: List of properties
- *       400:
- *         description: Invalid price per meter
- */
-app.get('/property/price-per-meter/:price', (req, res) => {
-    const pricePerMeter = parseFloat(req.params.price);
-
-    if (isNaN(pricePerMeter) || pricePerMeter <= 0) {
-        return res.status(400).send({ error: 'Invalid price per meter' });
-    }
-
-    fs.readFile('data/property.json', 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading data file');
-            return;
-        }
-
-        let properties = [];
-        try {
-            properties = JSON.parse(data);
-        } catch (parseError) {
-            console.error('Error parsing properties data:', parseError);
-            return res.status(500).send('Error parsing properties data');
-        }
-
-        const filteredProperties = properties.filter(p => {
-            if (p.pricePerMeter) {
-                const price = parseFloat(p.pricePerMeter.split(' ')[0]);
-                return price <= pricePerMeter;
-            }
-            return false;
-        });
-
-        res.json(filteredProperties);
-    });
-});
 
 /**
  * @swagger
- * /property/rent/{rent}:
- *   get:
- *     summary: Get properties with rent less than or equal to the specified value
- *     tags: [Property]
- *     parameters:
- *       - in: path
- *         name: rent
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: List of properties
- *       400:
- *         description: Invalid rent
- */
-app.get('/property/rent/:rent', (req, res) => {
-    const rent = parseFloat(req.params.rent);
-
-    if (isNaN(rent) || rent <= 0) {
-        return res.status(400).send({ error: 'Invalid rent' });
-    }
-
-    fs.readFile('data/property.json', 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading data file');
-            return;
-        }
-
-        let properties = [];
-        try {
-            properties = JSON.parse(data);
-        } catch (parseError) {
-            console.error('Error parsing properties data:', parseError);
-            return res.status(500).send('Error parsing properties data');
-        }
-
-        const filteredProperties = properties.filter(p => {
-            if (p.rent) {
-                const rentValue = parseFloat(p.rent.split(' ')[0]);
-                return rentValue <= rent;
-            }
-            return false;
-        });
-
-        res.json(filteredProperties);
-    });
-});
-
-/**
- * @swagger
- * /property/{id}:
- *   put:
- *     summary: Update property by ID
- *     tags: [Property]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *       - in: query
- *         name: address
- *         schema:
- *           type: string
- *       - in: query
- *         name: description
- *         schema:
- *           type: string
- *       - in: query
- *         name: price
- *         schema:
- *           type: number
- *       - in: query
- *         name: rooms
- *         schema:
- *           type: integer
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [ "for_sale", "sold", "rented" ]
- *       - in: query
- *         name: type
- *         schema:
- *           type: string
- *           enum: [ "house", "apartment", "land" ]
- *     responses:
- *       200:
- *         description: Property updated successfully
- *       404:
- *         description: Property not found
- */
-app.put('/property/:id', (req, res) => {
-    fs.readFile('data/property.json', 'utf8', (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading data file');
-            return;
-        }
-
-        let properties = JSON.parse(data);
-        const propertyIndex = properties.findIndex(p => p.id == req.params.id);
-
-        if (propertyIndex === -1) {
-            return res.status(404).send('Property not found');
-        }
-
-        const updatedProperty = { ...properties[propertyIndex], ...req.query };
-        properties[propertyIndex] = updatedProperty;
-
-        fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
-            if (writeError) {
-                console.error('Error writing properties data:', writeError);
-                return res.status(500).send('Error updating property');
-            }
-
-            res.status(200).send({ message: 'Property updated successfully', property: updatedProperty });
-        });
-    });
-});
-
-/**
- * @swagger
- * /reservation/create:
+ * /reservations:
  *   post:
  *     summary: Create a reservation
  *     tags: [Reservation]
@@ -253,10 +87,10 @@ app.put('/property/:id', (req, res) => {
  *       404:
  *         description: Property not found
  */
-app.post('/reservation/create', (req, res) => {
+app.post('/reservations', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            console.error('Error reading reservations file:', err);
+            console.error(err);
             return res.status(500).send('Error reading reservations data');
         }
 
@@ -334,7 +168,7 @@ app.post('/reservation/create', (req, res) => {
 
 /**
  * @swagger
- * /reservation/{id}:
+ * /reservations/{id}:
  *   get:
  *     summary: Get reservation by ID
  *     tags: [Reservation]
@@ -350,7 +184,7 @@ app.post('/reservation/create', (req, res) => {
  *       404:
  *         description: Reservation not found
  */
-app.get('/reservation/:id', (req, res) => {
+app.get('/reservations/:id', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');
@@ -378,7 +212,7 @@ app.get('/reservation/:id', (req, res) => {
 
 /**
  * @swagger
- * /reservation/{id}/extend:
+ * /reservations/{id}:
  *   patch:
  *     summary: Extend reservation by ID
  *     tags: [Reservation]
@@ -402,7 +236,7 @@ app.get('/reservation/:id', (req, res) => {
  *       404:
  *         description: Reservation not found
  */
-app.patch('/reservation/:id/extend', (req, res) => {
+app.patch('/reservations/:id', (req, res) => {
     const days = parseInt(req.query.days, 10);
 
     if (isNaN(days) || days <= 0) {

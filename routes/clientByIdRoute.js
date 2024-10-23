@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 
 /**
  * @swagger
@@ -19,9 +20,9 @@ import express from 'express';
  *         description: Client not found
  */
 
-export const clientsIdRouter = express.Router();
+export const clientIdRouter = express.Router();
 
-clientsIdRouter.get('/', (req, res) => {
+clientIdRouter.get("/clients/:id", (req, res) => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');

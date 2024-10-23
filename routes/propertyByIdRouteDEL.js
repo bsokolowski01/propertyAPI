@@ -32,7 +32,7 @@ export const propertyIdRouterDEL = express.Router();
  *       500:
  *         description: Error deleting property
  */
-propertyIdRouterDEL.delete('/', (req, res) => {
+propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');

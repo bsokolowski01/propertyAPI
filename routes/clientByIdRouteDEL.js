@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 
-export const clientsIdRouterDEL = express.Router();
+export const clientIdRouterDEL = express.Router();
 
 /**
  * @swagger
@@ -21,7 +21,7 @@ export const clientsIdRouterDEL = express.Router();
  *       404:
  *         description: Client not found
  */
-clientsIdRouterDEL.delete('/clients/:id', (req, res) => {
+clientIdRouterDEL.delete('/clients/:id', (req, res) => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             res.status(500).send('Error reading data file');
