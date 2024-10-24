@@ -1,87 +1,93 @@
 import express from 'express';
-import { faker } from '@faker-js/faker';
 import fs from 'fs';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
-import { generatorData } from './generator.js';
+import { clientGenerator, propertyGenerator } from './generator.js';
+
+import { clientIdRouter } from './routes/client/clientByIdRoute.js';
+import { clientRouterPOST } from './routes/client/clientRoutePOST.js';
+import { clientsRouter } from './routes/client/clientsRoute.js';
+import { clientIdRouterDEL } from './routes/client/clientByIdRouteDEL.js';
+import { clientRouterPATCH } from './routes/client/clientByIdRoutePATCH.js';
+import { clientByIdRouterPUT } from './routes/client/clientByIdRoutePUT.js';
+
+import { propertiesRouter } from './routes/property/propertiesRoute.js';
+import { propertyIdRouter } from './routes/property/propertyByIdRoute.js';
+import { propertyIdRouterDEL } from './routes/property/propertyByIdRouteDEL.js';
+import { propertyRouterPUT } from './routes/property/propertyRoutePUT.js';
+import { propertyRouterPOST } from './routes/property/propertyRoutePOST.js';
+import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH.js';
+
+import { reservationsRouter } from './routes/reservation/reservationRoute.js';
+import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST.js';
+import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute.js';
+import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH.js';
+import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL.js';
+import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT.js';
+
 const app = new express();
 
-const data = []
+//słowo klucz: rabarbar 24.10.2024
+
+app.use(express.json());
+
+const clientData = []
+const propertyData = []
 
 for (let id = 1; id <=10; id++) {
-    data.push(generatorData(id));
+    clientData.push(clientGenerator(id));
+    propertyData.push(propertyGenerator(id));
 }
 
-fs.writeFileSync('./data.json', JSON.stringify(data, null, 2));
+fs.writeFileSync('./data/client.json', JSON.stringify(clientData, null, 2));
+fs.writeFileSync('./data/property.json', JSON.stringify(propertyData, null, 2));
 
-// Wyświetlanie wszystkich klientów po ich ID
-app.get('/client/:id', (req, res) => {
-    
-    fs.readFile('data.json', 'utf8', (err, data) => {
-      if (err) {
-        res.status(500).send('Error reading data file');
-        return;
-      }
-  
-      const clients = JSON.parse(data);
+// Swagger setup
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Property API',
+            version: '1.0.0',
+            description: 'API for managing properties and reservations',
+        },
+        servers: [
+            {
+                url: 'http://localhost:8989',
+            },
+        ],
+    },
+    apis: ['routes/**/*.js'], 
+};
 
-      const client = clients.find(c => c.client.id == req.params.id);
-  
-      if (client) {
-        res.json(client.client);
-      } else {
-        res.status(404).send('Client not found');
-      }
-    });
-  });
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.post('/createReservation', (req, res) => {
+// wersjonowanie API i link np. api/v1/..
 
-    
-      fs.readFile('data.json', 'utf8', (err, data) => {
+app.use("", clientsRouter);
+app.use("", clientIdRouter);
+app.use("", clientRouterPOST);
+app.use("", clientIdRouterDEL); 
+app.use("", clientRouterPATCH);
+app.use("", clientByIdRouterPUT);
 
-        var reservation = JSON.parse(data);
+app.use("", propertiesRouter);
+app.use("", propertyIdRouter)
+app.use("", propertyIdRouterDEL);
+app.use("", propertyRouterPUT);
+app.use("", propertyRouterPOST);
+app.use("", propertyByIdRouterPATCH);
 
-        reservation = req.body;
-
-        if (!reservation) {
-            return res.status(400).send({ error: 'Reservation data is required' });
-        }
-    
-        const { id, rooms, date, status } = reservation;
-    
-        if (typeof id !== 'number' || typeof rooms !== 'number' || typeof status !== 'string' ||
-            !date || typeof date.start !== 'string' || typeof date.end !== 'string') {
-            return res.status(400).send({ error: 'Invalid reservation data format' });
-        }
-
-        if (err) {
-            console.error('Error reading reservations file:', err);
-            return res.status(500).send('Error reading reservations data');
-        }
-    
-        let reservations = [];
-        try {
-          reservations = JSON.parse(data);
-        } catch (parseError) {
-          console.error('Error parsing reservations data:', parseError);
-          return res.status(500).send('Error parsing reservations data');
-        }
-    
-        reservations.push(reservation);
-    
-        fs.writeFile('data.json', JSON.stringify(reservations, null, 2), (writeError) => {
-          if (writeError) {
-            console.error('Error writing reservations data:', writeError);
-            return res.status(500).send('Error saving reservation');
-          }
-    
-          res.status(201).send({ message: 'Reservation created successfully', reservation });
-        });
-      });
-
-});
+app.use("", reservationsRouter);
+app.use("", reservationRouterPOST);
+app.use("", reservationByIdRouter);
+app.use("", reservationByIdRouterPATCH);
+app.use("", reservationByIdRouterDEL);
+app.use("", reservationByIdRouterPUT);
 
 
 app.listen(8989, () => {
     console.log('Started on 8989');
-});
+}); 
