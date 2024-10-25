@@ -113,7 +113,13 @@ propertyRouterPOST.post('/properties', (req, res) => {
                 return res.status(500).send('Error saving property');
             }
 
-            res.status(201).send({ message: 'Property created successfully', property: newProperty });
+            res.status(201).send({ 
+                message: 'Property created successfully', 
+                property: newProperty,
+                links: {
+                    getList: "properties"
+                }
+            });
         });
     });
 });

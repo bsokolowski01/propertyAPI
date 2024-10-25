@@ -48,7 +48,7 @@ export const clientByIdRouterPUT = express.Router();
  */
 
 clientByIdRouterPUT.put('/clients/:id', (req, res) => {
-    const clientId = parseInt(req.params.id, 10);
+    const clientId = parseInt(req.params.id);
     const { name, email, phone, address } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim() === '') {
@@ -66,15 +66,22 @@ clientByIdRouterPUT.put('/clients/:id', (req, res) => {
 
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
-            return;
+            console.error('Error reading clients file:', err);
+            return res.status(500).send('Error reading clients data');
         }
 
-        let clients = JSON.parse(data);
+        let clients = [];
+        try {
+            clients = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            return res.status(500).send('Error parsing clients data');
+        }
+
         const clientIndex = clients.findIndex(c => c.id === clientId);
 
         if (clientIndex === -1) {
-            return res.status(404).send('Client not found');
+            return res.status(404).send({ error: 'Client not found' });
         }
 
         clients[clientIndex] = { ...clients[clientIndex], name, email, phone, address };
@@ -85,7 +92,16 @@ clientByIdRouterPUT.put('/clients/:id', (req, res) => {
                 return res.status(500).send('Error updating client data');
             }
 
-            res.status(200).send({ message: 'Client data updated successfully' });
+        res.status(200).send({
+            message: 'Client data updated successfully',
+            links: {
+                getById: `/clients/${clientId}`,
+                getList: '/clients',
+                delete: `/clients/${clientId}`,
+                post: '/clients',
+                update: `/clients/${clientId}`,
+            }
         });
     });
+});
 });

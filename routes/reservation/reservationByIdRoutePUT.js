@@ -90,7 +90,15 @@ reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
                 return res.status(500).send('Error updating reservation data');
             }
 
-            res.status(200).send({ message: 'Reservation data updated successfully' });
+            res.status(200).send({ 
+                message: 'Reservation data updated successfully', 
+                links: {
+                    getById: `/reservations/${reservationId}`,
+                    getList: '/reservations',
+                    delete: `/reservations/${reservationId}`,
+                    patch: `/reservations/${reservationId}`,
+                    post: `/reservations`                }
+            });
         });
     });
 });

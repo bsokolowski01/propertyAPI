@@ -18,8 +18,18 @@ export const clientIdRouterDEL = express.Router();
  *     responses:
  *       200:
  *         description: Client deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Client deleted successfully
  *       404:
  *         description: Client not found
+ *       500:
+ *         description: Error deleting client
  */
 clientIdRouterDEL.delete('/clients/:id', (req, res) => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
@@ -41,7 +51,16 @@ clientIdRouterDEL.delete('/clients/:id', (req, res) => {
                 return res.status(500).send('Error deleting client');
             }
 
-            res.status(200).send({ message: 'Client deleted successfully' });
+            res.status(200).send({
+                message: 'Client deleted successfully',
+                links: {
+                    getById: `/clients/${req.params.id}`,
+                    getList: '/clients',
+                    post: '/clients',
+                    put: `/clients/${req.params.id}`,
+                    patch: `/clients/${req.params.id}`
+                }
+            });
         });
     });
 });

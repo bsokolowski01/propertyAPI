@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
 
 import { clientGenerator, propertyGenerator } from './generator.js';
 
@@ -31,6 +32,15 @@ const app = new express();
 //słowo klucz: rabarbar 24.10.2024
 
 app.use(express.json());
+
+const corsOptions = {
+    origin: 'http://localhost:8989', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'X-Content-Type-Options', 'Cache-Control'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
 
 const clientData = []
 const propertyData = []
@@ -64,7 +74,12 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// wersjonowanie API i link np. api/v1/..
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Cache-Control', 'no-cache');
+    next();
+});
 
 app.use("", clientsRouter);
 app.use("", clientIdRouter);

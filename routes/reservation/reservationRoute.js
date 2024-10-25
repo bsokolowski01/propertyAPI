@@ -58,6 +58,11 @@ reservationsRouter.get('/reservations', (req, res) => {
             return res.status(500).send('Error parsing reservations data');
         }
 
-        res.json(reservations);
+        res.json({
+            ...reservations,
+            links: {
+                post: '/reservations',
+            }
+        });
     });
 });

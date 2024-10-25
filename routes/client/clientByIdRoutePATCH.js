@@ -71,7 +71,15 @@ clientRouterPATCH.patch('/clients/:id', (req, res) => {
                 return res.status(500).send('Error updating client email');
             }
 
-            res.status(200).send({ message: 'Client email updated successfully', client: clients[clientIndex] });
+            res.status(200).send({
+                message: 'Client email updated successfully',
+                links: {
+                    self: `/clients/${clientId}`,
+                    delete: `/clients/${clientId}`,
+                    update: `/clients/${clientId}`,
+                    list: '/clients'
+                }
+            });
         });
     });
 });

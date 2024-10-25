@@ -67,7 +67,17 @@ propertyRouterPUT.put('/properties/:id', (req, res) => {
                 return res.status(500).send('Error updating property');
             }
 
-            res.status(200).send({ message: 'Property updated successfully', property: updatedProperty });
+            res.status(200).send({ 
+                message: 'Property updated successfully', 
+                property: updatedProperty,
+                links: {
+                    getById: `/properties/${propertyId}`,
+                    getList: '/properties',
+                    delete: `/properties/${propertyId}`,
+                    patch: `/properties/${propertyId}`,
+                    post: `/properties`
+                }
+            });
         });
     });
 });

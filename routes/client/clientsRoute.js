@@ -46,6 +46,12 @@ clientsRouter.get('/clients', (req, res) => {
         }
 
         const clients = JSON.parse(data);
-        res.json(clients);
+
+        res.json({
+            ...clients,
+            links: {
+                getList: '/clients'
+            }
+        });
     });
 });

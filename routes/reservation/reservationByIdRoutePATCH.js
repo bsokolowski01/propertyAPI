@@ -67,7 +67,17 @@ reservationByIdRouterPATCH.patch('/reservations/:id', (req, res) => {
                 return res.status(500).send('Error updating reservation');
             }
 
-            res.status(200).send({ message: 'Reservation extended successfully', reservation });
+            res.status(200).send({ 
+                message: 'Reservation extended successfully', 
+                ...reservation,
+                links: {
+                    getById: `/reservations/${req.params.id}`,
+                    getList: '/reservations',
+                    delete: `/reservations/${req.params.id}`,
+                    post: `/reservations`,
+                    put: `/reservations/${req.params.id}`
+                }
+            });
         });
     });
 });

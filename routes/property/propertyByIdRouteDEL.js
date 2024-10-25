@@ -52,7 +52,16 @@ propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
                 return res.status(500).send('Error deleting property');
             }
 
-            res.status(200).send({ message: 'Property deleted successfully' });
+            res.status(200).send({ 
+                message: 'Property deleted successfully',
+                links: {
+                    geteById: `/properties/${req.params.id}`,
+                    getList: '/properties',
+                    patch: `properties/${req.params.id}`,
+                    post: '/properties',
+                    put: `/properties/${req.params.id}`
+                }
+             });
         });
     });
 });

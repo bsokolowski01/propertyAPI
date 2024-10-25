@@ -57,7 +57,16 @@ reservationByIdRouterDEL.delete('/reservations/:id', (req, res) => {
                 return res.status(500).send('Error deleting reservation');
             }
 
-            res.status(200).send({ message: 'Reservation deleted successfully' });
+            res.status(200).send({ 
+                message: 'Reservation deleted successfully',
+                links: {
+                    getById: `/reservations/${reservationId}`,
+                    getList: '/reservations',
+                    patch: `/reservations/${reservationId}`,
+                    post: `/reservations`,
+                    put: `/reservations/${reservationId}`,
+                }
+            });
         });
     });
 });

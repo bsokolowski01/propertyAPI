@@ -40,7 +40,16 @@ reservationByIdRouter.get('/reservations/:id', (req, res) => {
         const reservation = reservations.find(r => r.id == req.params.id);
 
         if (reservation) {
-            res.json(reservation);
+            res.json({
+                ...reservation,
+                links: {
+                    getList: '/reservations',
+                    delete: `/reservations/${req.params.id}`,
+                    patch: `/reservations/${req.params.id}`,
+                    post: `/reservations`,
+                    put: `/reservations/${req.params.id}`
+                }
+            });
         } else {
             res.status(404).send('Reservation not found');
         }

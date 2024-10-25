@@ -99,7 +99,13 @@ reservationRouterPOST.post('/reservations', (req, res) => {
                     return res.status(500).send('Error saving reservation');
                 }
 
-                res.status(201).send({ message: 'Reservation created successfully', reservation: newReservation });
+                res.status(201).send({ 
+                    message: 'Reservation created successfully', 
+                    reservation: newReservation,
+                    links: {
+                        getList: '/reservations'
+                    }
+                });
             });
         });
     });

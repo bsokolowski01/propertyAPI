@@ -46,42 +46,18 @@ clientRouterPOST.post("/clients", (req, res) => {
         return res.status(400).send({ error: 'Invalid email address' });
     }
 
-    fs.readFile('data/client.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading clients file:', err);
-            return res.status(500).send('Error reading clients data');
+    fs.writeFile('data/client.json', (writeError) => {
+        if (writeError) {
+            console.error('Error writing clients data:', writeError);
+            return res.status(500).send('Error saving client');
         }
 
-        let clients = [];
-        if (data) {
-            try {
-                clients = JSON.parse(data);
-            } catch (parseError) {
-                console.error('Error parsing clients data:', parseError);
-                return res.status(500).send('Error parsing clients data');
+        res.status(201).send({
+            message: 'Client created successfully',
+            client: newClient,
+            links: {
+                getList: '/clients'
             }
-        }
-
-        const lastId = clients.length > 0 ? clients[clients.length - 1].id : 0;
-        const newId = lastId + 1;
-
-        const newClient = {
-            id: newId,
-            name,
-            email,
-            phone,
-            address
-        };
-
-        clients.push(newClient);
-
-        fs.writeFile('data/client.json', JSON.stringify(clients, null, 2), (writeError) => {
-            if (writeError) {
-                console.error('Error writing clients data:', writeError);
-                return res.status(500).send('Error saving client');
-            }
-
-            res.status(201).send({ message: 'Client created successfully', client: newClient });
         });
     });
 });

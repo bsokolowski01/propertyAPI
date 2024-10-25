@@ -33,12 +33,15 @@ clientIdRouter.get("/clients/:id", (req, res) => {
         const client = clients.find(c => c.id == req.params.id);
 
         if (client) {
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('X-Content-Type-Options', 'nosniff');
             res.json({
                 ...client,
                 links: {
-                    delete: `/client/${client.id}`                }
+                    getList: '/clients',
+                    delete: `/clients/${client.id}`,
+                    patch: `/clients/${client.id}`,
+                    post: '/clients',
+                    put: `/clients/${client.id}`
+                }
             });
         } else {
             res.status(404).send('Client not found');

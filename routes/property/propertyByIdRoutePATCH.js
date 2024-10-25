@@ -64,7 +64,16 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req, res) => {
                 return res.status(500).send('Error updating property description');
             }
 
-            res.status(200).send({ message: 'Property description updated successfully' });
+            res.status(200).send({ 
+                message: 'Property description updated successfully',
+                links: {
+                    getById: `/properties/${propertyId}`,
+                    getList: '/properties',
+                    delete: `/properties/${propertyId}`,
+                    post: `/properties`,
+                    put: `/properties/${propertyId}`,
+                } 
+            });
         });
     });
 });

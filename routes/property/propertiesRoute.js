@@ -93,6 +93,11 @@ propertiesRouter.get('/properties', (req, res) => {
             });
         }
 
-        res.json(properties);
+        res.json({
+            ...properties,
+            links: {
+                post: '/properties',
+            }
+        })
     });
 });

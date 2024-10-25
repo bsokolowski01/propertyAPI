@@ -70,6 +70,15 @@ propertyIdRouter.get('/properties/:id', (req, res) => {
             return res.status(404).send('Property not found');
         }
 
-        res.json(property);
+        res.json({
+            ...property,
+            links: {
+                getList: '/properties',
+                delete: `/properties/${property.id}`,
+                patch: `/properties/${property.id}`,
+                post: '/properties',
+                put: `/properties/${property.id}`
+            }
+        });
     });
 });
