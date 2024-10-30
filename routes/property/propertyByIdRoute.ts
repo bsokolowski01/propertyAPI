@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertyIdRouter = express.Router();
 
@@ -56,7 +58,10 @@ export const propertyIdRouter = express.Router();
  *       500:
  *         description: Error reading data file
  */
-propertyIdRouter.get('/properties/:id', (req, res) => {
+propertyIdRouter.get('/properties/:id', (req: Request, res: Response): void => {
+
+    const propertyId = parseInt(req.params.id, 10);
+
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);
@@ -64,11 +69,20 @@ propertyIdRouter.get('/properties/:id', (req, res) => {
             return;
         }
 
-        const properties = JSON.parse(data);
-        const property = properties.find(c => c.id == req.params.id);
+        let properties: Property[];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
+        }
+
+        const property = properties.find((c: { id: number }) => c.id === propertyId);
 
         if (!property) {
-            return res.status(404).send({ message: 'Property not found' });
+            res.status(404).send({ message: 'Property not found' });
+            return; 
         }
 
         res.status(200).send({
@@ -81,3 +95,4 @@ propertyIdRouter.get('/properties/:id', (req, res) => {
         });
     });
 });
+

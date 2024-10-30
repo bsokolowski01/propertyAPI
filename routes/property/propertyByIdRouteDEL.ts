@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertyIdRouterDEL = express.Router();
 
@@ -32,7 +34,10 @@ export const propertyIdRouterDEL = express.Router();
  *       500:
  *         description: Error deleting property
  */
-propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
+propertyIdRouterDEL.delete('/properties/:id', (req: Request, res: Response): void => {
+    
+    const propertyId = parseInt(req.params.id, 10);
+
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);
@@ -40,20 +45,31 @@ propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
             return;
         }
 
-        let properties = JSON.parse(data);
-        const updatedProperties = properties.filter(c => c.id != req.params.id);
-
-        if (properties.length === updatedProperties.length) {
-            return res.status(404).send({ message: 'Property not found' });
+        let properties: Property[];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
         }
 
-        fs.writeFile('data/property.json', JSON.stringify(updatedProperties, null, 2), (writeError) => {
+    
+        const property = properties.find((c: { id: number }) => c.id === propertyId);
+
+        if (property) {
+            res.status(404).send({ error: 'Property not found' });
+            return;
+        }
+
+        fs.writeFile('data/property.json', JSON.stringify(property, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send({ error: 'Error deleting property' });
+                res.status(500).send({ error: 'Error deleting property' })
+                return;
             }
 
-            res.status(200).send({ 
+            res.status(200).send({
                 message: 'Property deleted successfully',
                 _links: {
                     self: {
@@ -63,7 +79,7 @@ propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
                         href: `${req.protocol}://${req.get('host')}/properties`
                     }
                 }
-             });
+            });
         });
     });
 });

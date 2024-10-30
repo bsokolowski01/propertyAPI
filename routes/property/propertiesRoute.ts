@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertiesRouter = express.Router();
 
@@ -64,32 +66,42 @@ export const propertiesRouter = express.Router();
  *       500:
  *         description: Error reading data file
  */
-propertiesRouter.get('/properties', (req, res) => {
+propertiesRouter.get('/properties', (req: Request, res: Response): void => {
+    
+    const maxPricePerMeter = parseFloat(req.query.maxPricePerMeter as string);
+    const maxRent = parseFloat(req.query.maxRent as string);
+    
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);
-            res.status(500).send({ error:'Error reading data file' });
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
-        let properties = JSON.parse(data);
-        const { maxPricePerMeter, maxRent } = req.query;
+        let properties: Property[];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
+        }
 
         if (maxPricePerMeter) {
-            properties = properties.filter(property => {
+            properties = properties.filter((property: Property) => {
                 if (property.pricePerMeter) {
                     const pricePerMeter = parseFloat(property.pricePerMeter.split(' ')[0]);
-                    return pricePerMeter <= parseFloat(maxPricePerMeter);
+                    return pricePerMeter <= maxPricePerMeter;
                 }
                 return false;
             });
         }
 
         if (maxRent) {
-            properties = properties.filter(property => {
+            properties = properties.filter((property: Property) => {
                 if (property.rent) {
                     const rent = parseFloat(property.rent.split(' ')[0]);
-                    return rent <= parseFloat(maxRent);
+                    return rent <= maxRent;
                 }
                 return false;
             });
@@ -101,7 +113,7 @@ propertiesRouter.get('/properties', (req, res) => {
         }
 
         res.status(200).send({
-            propertiesList: properties.map(p => ({
+            propertiesList: properties.map((p: any) => ({
                 ...p,
                 _links: {
                     self: {

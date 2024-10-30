@@ -88,15 +88,13 @@ clientRouterPOST.post('/clients', (req: Request, res: Response): void => {
             return;
         }
 
-        let clients: Client[] = [];
-        if (data) {
-            try {
-                clients = JSON.parse(data);
-            } catch (parseError) {
-                console.error('Error parsing clients data:', parseError);
-                res.status(500).send({ error: 'Error parsing clients data' });
-                return;
-            }
+        let clients: Client[];
+        try {
+            clients = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
         }
 
         const lastId = clients.length > 0 ? clients[clients.length - 1].id : 0;

@@ -1,33 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
-
-interface ClientResponse {
-    clientsList: {
-        id: number;
-        name: string;
-        email: string;
-        phone: string;
-        address: string;
-        _links: {
-            self: {
-                href: string;
-            };
-        };
-    }[];
-    _links: {
-        self: {
-            href: string;
-        };
-    };
-}
+import { Client } from '../../interfaces/clientInterface';
 
 export const clientsRouter: Router = express.Router();
 
@@ -90,7 +64,7 @@ clientsRouter.get('/clients', (req: Request, res: Response): void => {
             return;
         }
 
-        const clientResponse: ClientResponse = {
+        res.status(200).send({
             clientsList: clients.map(client => ({
                 ...client,
                 _links: {
@@ -104,8 +78,6 @@ clientsRouter.get('/clients', (req: Request, res: Response): void => {
                     href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
                 }
             }
-        };
-
-        res.status(200).send(clientResponse);
+        });
     });
 });

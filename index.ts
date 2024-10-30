@@ -9,23 +9,23 @@ import { clientGenerator, propertyGenerator } from './generator';
 import { clientIdRouter } from './routes/client/clientByIdRoute';
 import { clientRouterPOST } from './routes/client/clientRoutePOST';
 import { clientsRouter } from './routes/client/clientsRoute';
-import { clientIdRouterDEL } from './routes/client/clientByIdRouteDEL.js';
-import { clientRouterPATCH } from './routes/client/clientByIdRoutePATCH.js';
-import { clientByIdRouterPUT } from './routes/client/clientByIdRoutePUT.js';
+import { clientIdRouterDEL } from './routes/client/clientByIdRouteDEL';
+import { clientRouterPATCH } from './routes/client/clientByIdRoutePATCH';
+import { clientByIdRouterPUT } from './routes/client/clientByIdRoutePUT';
 
-// import { propertiesRouter } from './routes/property/propertiesRoute.js';
-// import { propertyIdRouter } from './routes/property/propertyByIdRoute.js';
-// import { propertyIdRouterDEL } from './routes/property/propertyByIdRouteDEL.js';
-// import { propertyRouterPUT } from './routes/property/propertyRoutePUT.js';
-// import { propertyRouterPOST } from './routes/property/propertyRoutePOST.js';
-// import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH.js';
+import { propertiesRouter } from './routes/property/propertiesRoute';
+import { propertyIdRouter } from './routes/property/propertyByIdRoute';
+import { propertyIdRouterDEL } from './routes/property/propertyByIdRouteDEL';
+// import { propertyRouterPUT } from './routes/property/propertyRoutePUT';
+// import { propertyRouterPOST } from './routes/property/propertyRoutePOST';
+// import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH';
 
-// import { reservationsRouter } from './routes/reservation/reservationsRoute.js';
-// import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST.js';
-// import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute.js';
-// import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH.js';
-// import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL.js';
-// import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT.js';
+// import { reservationsRouter } from './routes/reservation/reservationsRoute';
+// import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST';
+// import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute';
+// import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH';
+// import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL';
+// import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT';
 
 const app = express();
 
@@ -90,9 +90,9 @@ app.use("", clientIdRouterDEL);
 app.use("", clientRouterPATCH);
 app.use("", clientByIdRouterPUT);
 
-// app.use("", propertiesRouter);
-// app.use("", propertyIdRouter);
-// app.use("", propertyIdRouterDEL);
+app.use("", propertiesRouter);
+app.use("", propertyIdRouter);
+app.use("", propertyIdRouterDEL);
 // app.use("", propertyRouterPUT);
 // app.use("", propertyRouterPOST);
 // app.use("", propertyByIdRouterPATCH);

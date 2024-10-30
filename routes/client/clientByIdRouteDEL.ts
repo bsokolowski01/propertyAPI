@@ -55,7 +55,7 @@ clientIdRouterDEL.delete('/clients/:id', (req: Request, res: Response): void => 
             clients = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing clients data:', parseError);
-            res.status(500).json({ error: 'Error parsing clients data' });
+            res.status(500).send({ error: 'Error parsing clients data' });
             return;
         }
 

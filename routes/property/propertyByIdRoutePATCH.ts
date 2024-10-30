@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertyByIdRouterPATCH = express.Router();
 
@@ -35,12 +37,14 @@ export const propertyByIdRouterPATCH = express.Router();
  *         description: Error updating property description
  */
 
-propertyByIdRouterPATCH.patch('/properties/:id', (req, res) => {
+propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): void => {
+    
     const propertyId = parseInt(req.params.id, 10);
-    const { description } = req.body;
+    const { description }: Property = req.body;
 
     if (!description) {
-        return res.status(400).send({ error: 'Description is required' });
+        res.status(400).send({ error: 'Description is required' });
+        return; 
     }
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
@@ -50,19 +54,29 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req, res) => {
             return;
         }
 
-        let properties = JSON.parse(data);
-        const propertyIndex = properties.findIndex(p => p.id === propertyId);
-
-        if (propertyIndex === -1) {
-            return res.status(404).send({ error: 'Property not found' });
+        let properties: Property[];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
         }
 
-        properties[propertyIndex].description = description;
+        const property = properties.find((c: { id: number }) => c.id === propertyId);
+
+        if (!property) {
+            res.status(404).send({ error: 'Property not found' });
+            return; 
+        }
+
+        properties[propertyId].description = description;
 
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send({ error: 'Error updating property description' });
+                res.status(500).send({ error: 'Error updating property description' });
+                return;
             }
 
             res.status(200).send({ 

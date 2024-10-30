@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertyRouterPOST = express.Router();
 
@@ -42,57 +44,57 @@ export const propertyRouterPOST = express.Router();
  *       500:
  *         description: Error saving property
  */
-propertyRouterPOST.post('/properties', (req, res) => {
-    const { address, description, rooms, surfaceArea, status, type, rent, price } = req.body;
+propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
+    const { address, description, rooms, surfaceArea, status, type, rent, price }: Property = req.body;
 
     const validStatuses = ["for rent", "sold", "rented", "for sale"];
     const validTypes = ["house", "apartment", "land"];
 
     if (!address || !description || typeof rooms !== 'number' || typeof surfaceArea !== 'number' || !status || !type) {
-        return res.status(400).send({ error: 'All fields are required and must be valid' });
+        res.status(400).send({ error: 'All fields are required and must be valid' });
+        return; 
     }
 
     if (!validStatuses.includes(status)) {
-        return res.status(400).send({ error: 'Invalid status value' });
+        res.status(400).send({ error: 'Invalid status value' });
+        return;
     }
 
     if (!validTypes.includes(type)) {
-        return res.status(400).send({ error: 'Invalid type value' });
+        res.status(400).send({ error: 'Invalid type value' });
+        return;
     }
 
     if ((!price && !rent) || (price && rent)) {
-        return res.status(400).send({ error: 'Either price or rent must be provided, but not both' });
+        res.status(400).send({ error: 'Either price or rent must be provided, but not both' });
+        return; 
     }
 
     const surfaceAreaStr = `${surfaceArea} m2`;
-    let priceStr = price ? `${price} zł` : undefined;
-    let rentStr = rent ? `${rent} zł` : undefined;
-    let pricePerMeter;
-
-    if (price) {
-        pricePerMeter = `${(price / surfaceArea).toFixed(2)} zł/m2`;
-    }
+    const priceStr = price ? `${price} zł` : undefined;
+    const rentStr = rent ? `${rent} zł` : undefined;
+    const pricePerMeter = price ? `${(price / surfaceArea).toFixed(2)} zł/m2` : undefined;
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading properties file:', err);
-            return res.status(500).send({ error: 'Error reading properties data' });
+            res.status(500).send({ error: 'Error reading properties data' });
+            return;
         }
 
-        let properties = [];
-        if (data) {
-            try {
-                properties = JSON.parse(data);
-            } catch (parseError) {
-                console.error('Error parsing properties data:', parseError);
-                return res.status(500).send({ error: 'Error parsing properties data' });
-            }
+        let properties: Property[];
+        try {
+            properties = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
         }
 
         const lastId = properties.length > 0 ? properties[properties.length - 1].id : 0;
         const newId = lastId + 1;
 
-        const newProperty = {
+        const newProperty: Property = {
             id: newId,
             address,
             description,
@@ -110,11 +112,12 @@ propertyRouterPOST.post('/properties', (req, res) => {
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send({ error: 'Error saving property' });
+                res.status(500).send({ error: 'Error saving property' });
+                return; 
             }
 
-            res.status(201).send({ 
-                message: 'Property created successfully', 
+            res.status(201).send({
+                message: 'Property created successfully',
                 property: newProperty,
                 _links: {
                     self: {

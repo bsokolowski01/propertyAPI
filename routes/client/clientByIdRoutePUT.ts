@@ -81,13 +81,13 @@ clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
             console.error('Error reading clients file:', err);
             return res.status(500).json({ error: 'Error reading clients data' });
         }
-
         let clients: Client[];
         try {
             clients = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing clients data:', parseError);
-            return res.status(500).json({ error: 'Error parsing clients data' });
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
         }
 
         const clientIndex = clients.findIndex((client) => client.id === clientId);
