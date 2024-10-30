@@ -47,7 +47,8 @@ export const propertyRouterPUT = express.Router();
 propertyRouterPUT.put('/properties/:id', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
@@ -55,7 +56,7 @@ propertyRouterPUT.put('/properties/:id', (req, res) => {
         const propertyIndex = properties.findIndex(p => p.id == req.params.id);
 
         if (propertyIndex === -1) {
-            return res.status(404).send('Property not found');
+            return res.status(404).send({ error: 'Property not found' });
         }
 
         const updatedProperty = { ...properties[propertyIndex], ...req.body };
@@ -64,18 +65,19 @@ propertyRouterPUT.put('/properties/:id', (req, res) => {
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send('Error updating property');
+                return res.status(500).send({ error: 'Error updating property' });
             }
 
             res.status(200).send({ 
                 message: 'Property updated successfully', 
                 property: updatedProperty,
-                links: {
-                    getById: `/properties/${propertyId}`,
-                    getList: '/properties',
-                    delete: `/properties/${propertyId}`,
-                    patch: `/properties/${propertyId}`,
-                    post: `/properties`
+                _links: {
+                    self: { 
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}` 
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/properties`
+                    }
                 }
             });
         });

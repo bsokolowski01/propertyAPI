@@ -71,7 +71,8 @@ reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
 
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
@@ -79,7 +80,7 @@ reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
         const reservationIndex = reservations.findIndex(r => r.id === reservationId);
 
         if (reservationIndex === -1) {
-            return res.status(404).send('Reservation not found');
+            return res.status(404).send({ error: 'Reservation not found' });
         }
 
         reservations[reservationIndex] = { ...reservations[reservationIndex], propertyId, clientId, date };
@@ -87,17 +88,19 @@ reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing reservations data:', writeError);
-                return res.status(500).send('Error updating reservation data');
+                return res.status(500).send({ error: 'Error updating reservation data' });
             }
 
             res.status(200).send({ 
                 message: 'Reservation data updated successfully', 
                 links: {
-                    getById: `/reservations/${reservationId}`,
-                    getList: '/reservations',
-                    delete: `/reservations/${reservationId}`,
-                    patch: `/reservations/${reservationId}`,
-                    post: `/reservations`                }
+                    self: { 
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/reservations`
+                    }
+                }
             });
         });
     });

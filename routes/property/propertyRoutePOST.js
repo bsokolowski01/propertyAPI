@@ -76,7 +76,7 @@ propertyRouterPOST.post('/properties', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading properties file:', err);
-            return res.status(500).send('Error reading properties data');
+            return res.status(500).send({ error: 'Error reading properties data' });
         }
 
         let properties = [];
@@ -85,7 +85,7 @@ propertyRouterPOST.post('/properties', (req, res) => {
                 properties = JSON.parse(data);
             } catch (parseError) {
                 console.error('Error parsing properties data:', parseError);
-                return res.status(500).send('Error parsing properties data');
+                return res.status(500).send({ error: 'Error parsing properties data' });
             }
         }
 
@@ -110,14 +110,19 @@ propertyRouterPOST.post('/properties', (req, res) => {
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send('Error saving property');
+                return res.status(500).send({ error: 'Error saving property' });
             }
 
             res.status(201).send({ 
                 message: 'Property created successfully', 
                 property: newProperty,
-                links: {
-                    getList: "properties"
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}/${newId}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/properties`
+                    }
                 }
             });
         });

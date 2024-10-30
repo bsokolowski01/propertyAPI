@@ -1,8 +1,16 @@
-import express from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
 
-export const clientByIdRouterPUT = express.Router();
+export const clientByIdRouterPUT: Router = express.Router();
+
+interface Client {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+}
 
 /**
  * @swagger
@@ -47,41 +55,45 @@ export const clientByIdRouterPUT = express.Router();
  *         description: Error updating client data
  */
 
-clientByIdRouterPUT.put('/clients/:id', (req, res) => {
-    const clientId = parseInt(req.params.id);
+clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
+    const clientId = parseInt(req.params.id, 10);
     const { name, email, phone, address } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).send({ error: 'Invalid name' });
+        res.status(400).json({ error: 'Invalid name' });
+        return;
     }
     if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-        return res.status(400).send({ error: 'Invalid email' });
+        res.status(400).json({ error: 'Invalid email' });
+        return;
     }
     if (!phone || typeof phone !== 'string') {
-        return res.status(400).send({ error: 'Invalid phone' });
+        res.status(400).json({ error: 'Invalid phone' });
+        return;
     }
     if (!address || typeof address !== 'string' || address.trim() === '') {
-        return res.status(400).send({ error: 'Invalid address' });
+        res.status(400).json({ error: 'Invalid address' });
+        return;
     }
 
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading clients file:', err);
-            return res.status(500).send('Error reading clients data');
+            return res.status(500).json({ error: 'Error reading clients data' });
         }
 
-        let clients = [];
+        let clients: Client[];
         try {
             clients = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing clients data:', parseError);
-            return res.status(500).send('Error parsing clients data');
+            return res.status(500).json({ error: 'Error parsing clients data' });
         }
 
-        const clientIndex = clients.findIndex(c => c.id === clientId);
+        const clientIndex = clients.findIndex((client) => client.id === clientId);
 
         if (clientIndex === -1) {
-            return res.status(404).send({ error: 'Client not found' });
+            return res.status(404).json({ error: 'Client not found' });
         }
 
         clients[clientIndex] = { ...clients[clientIndex], name, email, phone, address };
@@ -89,19 +101,20 @@ clientByIdRouterPUT.put('/clients/:id', (req, res) => {
         fs.writeFile('data/client.json', JSON.stringify(clients, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing clients data:', writeError);
-                return res.status(500).send('Error updating client data');
+                return res.status(500).json({ error: 'Error updating client data' });
             }
 
-        res.status(200).send({
-            message: 'Client data updated successfully',
-            links: {
-                getById: `/clients/${clientId}`,
-                getList: '/clients',
-                delete: `/clients/${clientId}`,
-                post: '/clients',
-                update: `/clients/${clientId}`,
-            }
+            res.status(200).json({
+                message: 'Client data updated successfully',
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/clients`
+                    }
+                }
+            });
         });
     });
-});
 });

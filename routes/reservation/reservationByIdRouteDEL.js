@@ -38,7 +38,8 @@ reservationByIdRouterDEL.delete('/reservations/:id', (req, res) => {
 
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
@@ -46,7 +47,7 @@ reservationByIdRouterDEL.delete('/reservations/:id', (req, res) => {
         const reservationIndex = reservations.findIndex(r => r.id === reservationId);
 
         if (reservationIndex === -1) {
-            return res.status(404).send('Reservation not found');
+            return res.status(404).send({ error: 'Reservation not found' });
         }
 
         reservations.splice(reservationIndex, 1);
@@ -54,17 +55,18 @@ reservationByIdRouterDEL.delete('/reservations/:id', (req, res) => {
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing reservations data:', writeError);
-                return res.status(500).send('Error deleting reservation');
+                return res.status(500).send({ error: 'Error deleting reservation' });
             }
 
             res.status(200).send({ 
                 message: 'Reservation deleted successfully',
-                links: {
-                    getById: `/reservations/${reservationId}`,
-                    getList: '/reservations',
-                    patch: `/reservations/${reservationId}`,
-                    post: `/reservations`,
-                    put: `/reservations/${reservationId}`,
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}` 
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/reservations` 
+                    }
                 }
             });
         });

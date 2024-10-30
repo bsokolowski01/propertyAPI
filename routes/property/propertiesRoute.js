@@ -59,18 +59,20 @@ export const propertiesRouter = express.Router();
  *                   type:
  *                     type: string
  *                     example: house
+ *       404:
+ *         description: No properties found matching the criteria
  *       500:
  *         description: Error reading data file
  */
 propertiesRouter.get('/properties', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error:'Error reading data file' });
             return;
         }
 
         let properties = JSON.parse(data);
-
         const { maxPricePerMeter, maxRent } = req.query;
 
         if (maxPricePerMeter) {
@@ -93,11 +95,25 @@ propertiesRouter.get('/properties', (req, res) => {
             });
         }
 
-        res.json({
-            ...properties,
-            links: {
-                post: '/properties',
+        if (properties.length === 0) {
+            res.status(404).send({ message: 'No properties found matching the criteria' });
+            return;
+        }
+
+        res.status(200).send({
+            propertiesList: properties.map(p => ({
+                ...p,
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}/${p.id}`
+                    }
+                }
+            })),
+            _links: {
+                self: {
+                    href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                }
             }
-        })
+        });
     });
 });

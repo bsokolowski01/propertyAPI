@@ -43,7 +43,7 @@ reservationRouterPOST.post('/reservations', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, propertyData) => {
         if (err) {
             console.error('Error reading properties file:', err);
-            return res.status(500).send('Error reading properties data');
+            return res.status(500).send({ error: 'Error reading properties data' });
         }
 
         let properties = [];
@@ -51,7 +51,7 @@ reservationRouterPOST.post('/reservations', (req, res) => {
             properties = JSON.parse(propertyData);
         } catch (parseError) {
             console.error('Error parsing properties data:', parseError);
-            return res.status(500).send('Error parsing properties data');
+            return res.status(500).send({ error: 'Error parsing properties data' });
         }
 
         const property = properties.find(p => p.id === propertyId);
@@ -67,7 +67,7 @@ reservationRouterPOST.post('/reservations', (req, res) => {
         fs.readFile('data/reservation.json', 'utf8', (err, reservationData) => {
             if (err) {
                 console.error('Error reading reservations file:', err);
-                return res.status(500).send('Error reading reservations data');
+                return res.status(500).send({ error: 'Error reading reservations data' });
             }
 
             let reservations = [];
@@ -75,7 +75,7 @@ reservationRouterPOST.post('/reservations', (req, res) => {
                 reservations = JSON.parse(reservationData);
             } catch (parseError) {
                 console.error('Error parsing reservations data:', parseError);
-                return res.status(500).send('Error parsing reservations data');
+                return res.status(500).send({ error: 'Error parsing reservations data' });
             }
 
             const lastId = reservations.length > 0 ? reservations[reservations.length - 1].id : 0;
@@ -96,14 +96,19 @@ reservationRouterPOST.post('/reservations', (req, res) => {
             fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
                 if (writeError) {
                     console.error('Error writing reservations data:', writeError);
-                    return res.status(500).send('Error saving reservation');
+                    return res.status(500).send({ error: 'Error saving reservation' });
                 }
 
                 res.status(201).send({ 
                     message: 'Reservation created successfully', 
                     reservation: newReservation,
-                    links: {
-                        getList: '/reservations'
+                    _links: {
+                        self: {
+                            href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                        },
+                        list: {
+                            href: `${req.protocol}://${req.get('host')}/reservations`
+                        }
                     }
                 });
             });

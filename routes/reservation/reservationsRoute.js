@@ -39,6 +39,8 @@ export const reservationsRouter = express.Router();
  *                         type: string
  *                         format: date-time
  *                         example: 2024-10-21T14:39:31.088Z
+ *       404:
+ *         description: Empty reservation list
  *       500:
  *         description: Error reading data file
  */
@@ -46,22 +48,31 @@ export const reservationsRouter = express.Router();
 reservationsRouter.get('/reservations', (req, res) => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
-        let reservations = [];
-        try {
-            reservations = JSON.parse(data);
-        } catch (parseError) {
-            console.error('Error parsing reservations data:', parseError);
-            return res.status(500).send('Error parsing reservations data');
-        }
+        const reservations = JSON.parse(data);
 
-        res.json({
-            ...reservations,
-            links: {
-                post: '/reservations',
+        if (!reservations || Object.keys(reservations).length === 0) {
+            res.status(404).send({ error: 'Empty reservation list' });
+            return;
+        }
+        
+        res.status(200).send({
+            reservationsList: reservations.map(r => ({
+                ...r,
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}/${r.id}`
+                    }
+                }
+            })),
+            _links: {
+                self: {
+                    href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                }
             }
         });
     });

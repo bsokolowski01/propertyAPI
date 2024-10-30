@@ -1,8 +1,16 @@
-import express from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
 
-export const clientRouterPATCH = express.Router();
+export const clientRouterPATCH: Router = express.Router();
+
+interface Client {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+}
 
 /**
  * @swagger
@@ -35,32 +43,36 @@ export const clientRouterPATCH = express.Router();
  *       500:
  *         description: Error updating client email
  */
-clientRouterPATCH.patch('/clients/:id', (req, res) => {
+clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
     const { email } = req.body;
 
     if (!email || !validator.isEmail(email)) {
-        return res.status(400).send({ error: 'Invalid email address' });
+        res.status(400).json({ error: 'Invalid email address' });
+        return;
     }
 
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading clients file:', err);
-            return res.status(500).send('Error reading clients data');
+            res.status(500).json({ error: 'Error reading clients data' });
+            return;
         }
 
-        let clients = [];
+        let clients: Client[];
         try {
             clients = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing clients data:', parseError);
-            return res.status(500).send('Error parsing clients data');
+            res.status(500).json({ error: 'Error parsing clients data' });
+            return;
         }
 
-        const clientIndex = clients.findIndex(c => c.id === clientId);
+        const clientIndex = clients.findIndex((client) => client.id === clientId);
 
         if (clientIndex === -1) {
-            return res.status(404).send({ error: 'Client not found' });
+            res.status(404).json({ error: 'Client not found' });
+            return;
         }
 
         clients[clientIndex].email = email;
@@ -68,16 +80,19 @@ clientRouterPATCH.patch('/clients/:id', (req, res) => {
         fs.writeFile('data/client.json', JSON.stringify(clients, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing clients data:', writeError);
-                return res.status(500).send('Error updating client email');
+                res.status(500).json({ error: 'Error updating client email' });
+                return;
             }
 
-            res.status(200).send({
+            res.status(200).json({
                 message: 'Client email updated successfully',
-                links: {
-                    self: `/clients/${clientId}`,
-                    delete: `/clients/${clientId}`,
-                    update: `/clients/${clientId}`,
-                    list: '/clients'
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/clients`
+                    }
                 }
             });
         });

@@ -38,7 +38,8 @@ reservationByIdRouterPATCH.patch('/reservations/:id', (req, res) => {
 
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
@@ -47,13 +48,13 @@ reservationByIdRouterPATCH.patch('/reservations/:id', (req, res) => {
             reservations = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing reservations or reservations not found');
-            return res.status(500).send('Error parsing reservations or reservations not found');
+            return res.status(500).send({ error: 'Error parsing reservations or reservations not found' });
         }
 
         const reservationIndex = reservations.findIndex(r => r.id == req.params.id);
 
         if (reservationIndex === -1) {
-            return res.status(404).send('Reservation not found');
+            return res.status(404).send({ error: 'Reservation not found' });
         }
 
         const reservation = reservations[reservationIndex];
@@ -64,18 +65,19 @@ reservationByIdRouterPATCH.patch('/reservations/:id', (req, res) => {
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing reservations data:', writeError);
-                return res.status(500).send('Error updating reservation');
+                return res.status(500).send({ error: 'Error updating reservation' });
             }
 
             res.status(200).send({ 
                 message: 'Reservation extended successfully', 
                 ...reservation,
-                links: {
-                    getById: `/reservations/${req.params.id}`,
-                    getList: '/reservations',
-                    delete: `/reservations/${req.params.id}`,
-                    post: `/reservations`,
-                    put: `/reservations/${req.params.id}`
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}` 
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/reservations` 
+                    }
                 }
             });
         });

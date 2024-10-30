@@ -35,7 +35,8 @@ export const propertyIdRouterDEL = express.Router();
 propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
@@ -43,23 +44,24 @@ propertyIdRouterDEL.delete('/properties/:id', (req, res) => {
         const updatedProperties = properties.filter(c => c.id != req.params.id);
 
         if (properties.length === updatedProperties.length) {
-            return res.status(404).send('Property not found');
+            return res.status(404).send({ message: 'Property not found' });
         }
 
         fs.writeFile('data/property.json', JSON.stringify(updatedProperties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
-                return res.status(500).send('Error deleting property');
+                return res.status(500).send({ error: 'Error deleting property' });
             }
 
             res.status(200).send({ 
                 message: 'Property deleted successfully',
-                links: {
-                    geteById: `/properties/${req.params.id}`,
-                    getList: '/properties',
-                    patch: `properties/${req.params.id}`,
-                    post: '/properties',
-                    put: `/properties/${req.params.id}`
+                _links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/properties`
+                    }
                 }
              });
         });
