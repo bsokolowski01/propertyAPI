@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Reservation } from '../../interfaces/reservationInterface';
 
 export const reservationByIdRouter = express.Router();
 
@@ -23,7 +25,10 @@ export const reservationByIdRouter = express.Router();
  *       500:
  *         description: Error reading reservations file
  */
-reservationByIdRouter.get('/reservations/:id', (req, res) => {
+reservationByIdRouter.get('/reservations/:id', (req: Request, res: Response) => {
+
+    const reservationId = parseInt(req.params.id);
+
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file');
@@ -31,8 +36,7 @@ reservationByIdRouter.get('/reservations/:id', (req, res) => {
             return;
         }
 
-        let reservations = []
-
+        let reservations: Reservation[];
         try {
             reservations = JSON.parse(data);
         } catch (parseError) {
@@ -40,17 +44,17 @@ reservationByIdRouter.get('/reservations/:id', (req, res) => {
             return res.status(500).send({ error: 'Error parsing reservations or reservations not found' });
         }
 
-        const reservation = reservations.find(r => r.id == req.params.id);
+        const reservation = reservations.find((r: Reservation) => r.id == reservationId);
 
         if (reservation) {
             res.json({
                 ...reservation,
                 _links: {
                     self: {
-                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}` 
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
                     },
                     list: {
-                        href: `${req.protocol}://${req.get('host')}/reservations` 
+                        href: `${req.protocol}://${req.get('host')}/reservations`
                     }
                 }
             });

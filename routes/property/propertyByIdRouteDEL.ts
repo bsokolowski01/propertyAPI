@@ -35,7 +35,7 @@ export const propertyIdRouterDEL = express.Router();
  *         description: Error deleting property
  */
 propertyIdRouterDEL.delete('/properties/:id', (req: Request, res: Response): void => {
-    
+
     const propertyId = parseInt(req.params.id, 10);
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
@@ -54,15 +54,14 @@ propertyIdRouterDEL.delete('/properties/:id', (req: Request, res: Response): voi
             return;
         }
 
-    
-        const property = properties.find((c: { id: number }) => c.id === propertyId);
+        const updatedProperties = properties.filter(property => property.id !== propertyId);
 
-        if (property) {
+        if (properties.length === updatedProperties.length) {
             res.status(404).send({ error: 'Property not found' });
             return;
         }
 
-        fs.writeFile('data/property.json', JSON.stringify(property, null, 2), (writeError) => {
+        fs.writeFile('data/property.json', JSON.stringify(updatedProperties, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing properties data:', writeError);
                 res.status(500).send({ error: 'Error deleting property' })

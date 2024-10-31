@@ -63,10 +63,16 @@ clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
         res.status(400).json({ error: 'Invalid name' });
         return;
     }
-    if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-        res.status(400).json({ error: 'Invalid email' });
+
+    try {
+        if (!email || !validator.isEmail(email)) {
+            throw new Error('Invalid email address');
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
+
     if (!phone || typeof phone !== 'string') {
         res.status(400).json({ error: 'Invalid phone' });
         return;
@@ -81,6 +87,7 @@ clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
             console.error('Error reading clients file:', err);
             return res.status(500).json({ error: 'Error reading clients data' });
         }
+        
         let clients: Client[];
         try {
             clients = JSON.parse(data);
@@ -90,7 +97,7 @@ clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
             return;
         }
 
-        const clientIndex = clients.findIndex((client) => client.id === clientId);
+        const clientIndex = clients.findIndex((c: Client) => c.id === clientId);
 
         if (clientIndex === -1) {
             return res.status(404).json({ error: 'Client not found' });

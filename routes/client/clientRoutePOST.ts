@@ -76,8 +76,12 @@ clientRouterPOST.post('/clients', (req: Request, res: Response): void => {
         return;
     }
 
-    if (!validator.isEmail(email)) {
-        res.status(400).send({ error: 'Invalid email address' });
+    try {
+        if (!validator.isEmail(email)) {
+            throw new Error('Invalid email address');
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
 

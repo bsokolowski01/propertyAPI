@@ -16,13 +16,13 @@ import { clientByIdRouterPUT } from './routes/client/clientByIdRoutePUT';
 import { propertiesRouter } from './routes/property/propertiesRoute';
 import { propertyIdRouter } from './routes/property/propertyByIdRoute';
 import { propertyIdRouterDEL } from './routes/property/propertyByIdRouteDEL';
-// import { propertyRouterPUT } from './routes/property/propertyRoutePUT';
-// import { propertyRouterPOST } from './routes/property/propertyRoutePOST';
-// import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH';
+import { propertyRouterPUT } from './routes/property/propertyRoutePUT';
+import { propertyRouterPOST } from './routes/property/propertyRoutePOST';
+import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH';
 
-// import { reservationsRouter } from './routes/reservation/reservationsRoute';
-// import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST';
-// import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute';
+import { reservationsRouter } from './routes/reservation/reservationsRoute';
+import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST';
+import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute';
 // import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH';
 // import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL';
 // import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT';
@@ -34,7 +34,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions: cors.CorsOptions = {
-    origin: 'http://localhost:8989', 
+    origin: 'http://localhost:8989',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'X-Content-Type-Options', 'Cache-Control'],
     credentials: true
@@ -68,7 +68,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['routes/**/*.js', 'routes/**/*.ts'], 
+    apis: ['routes/**/*.js', 'routes/**/*.ts'],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
@@ -86,20 +86,20 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 app.use("", clientsRouter);
 app.use("", clientIdRouter);
 app.use("", clientRouterPOST);
-app.use("", clientIdRouterDEL); 
+app.use("", clientIdRouterDEL);
 app.use("", clientRouterPATCH);
 app.use("", clientByIdRouterPUT);
 
 app.use("", propertiesRouter);
 app.use("", propertyIdRouter);
 app.use("", propertyIdRouterDEL);
-// app.use("", propertyRouterPUT);
-// app.use("", propertyRouterPOST);
-// app.use("", propertyByIdRouterPATCH);
+app.use("", propertyRouterPUT);
+app.use("", propertyRouterPOST);
+app.use("", propertyByIdRouterPATCH);
 
-// app.use("", reservationsRouter);
-// app.use("", reservationRouterPOST);
-// app.use("", reservationByIdRouter);
+app.use("", reservationsRouter);
+app.use("", reservationRouterPOST);
+app.use("", reservationByIdRouter);
 // app.use("", reservationByIdRouterPATCH);
 // app.use("", reservationByIdRouterDEL);
 // app.use("", reservationByIdRouterPUT);

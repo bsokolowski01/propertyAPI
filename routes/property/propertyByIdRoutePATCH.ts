@@ -38,13 +38,18 @@ export const propertyByIdRouterPATCH = express.Router();
  */
 
 propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): void => {
-    
+
     const propertyId = parseInt(req.params.id, 10);
     const { description }: Property = req.body;
 
     if (!description) {
         res.status(400).send({ error: 'Description is required' });
-        return; 
+        return;
+    }
+
+    if (typeof description !== "string") {
+        res.status(400).send({ error: 'Description must be a string' });
+        return;
     }
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
@@ -63,14 +68,14 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): 
             return;
         }
 
-        const property = properties.find((c: { id: number }) => c.id === propertyId);
+        const propertyIndex = properties.findIndex((c: { id: number }) => c.id === propertyId);
 
-        if (!property) {
+        if (propertyIndex === -1) {
             res.status(404).send({ error: 'Property not found' });
-            return; 
+            return;
         }
 
-        properties[propertyId].description = description;
+        properties[propertyIndex].description = description;
 
         fs.writeFile('data/property.json', JSON.stringify(properties, null, 2), (writeError) => {
             if (writeError) {
@@ -79,7 +84,7 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): 
                 return;
             }
 
-            res.status(200).send({ 
+            res.status(200).send({
                 message: 'Property description updated successfully',
                 _links: {
                     self: {
@@ -88,7 +93,7 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): 
                     list: {
                         href: `${req.protocol}://${req.get('host')}/properties`
                     }
-                } 
+                }
             });
         });
     });

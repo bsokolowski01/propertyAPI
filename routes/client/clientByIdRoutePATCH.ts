@@ -2,15 +2,9 @@ import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
 
-export const clientRouterPATCH: Router = express.Router();
+import { Client } from '../../interfaces/clientInterface';
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
+export const clientRouterPATCH: Router = express.Router();
 
 /**
  * @swagger
@@ -47,8 +41,12 @@ clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
     const { email } = req.body;
 
-    if (!email || !validator.isEmail(email)) {
-        res.status(400).json({ error: 'Invalid email address' });
+    try {
+        if (!email || !validator.isEmail(email)) {
+            throw new Error('Invalid email address');
+        }
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
 

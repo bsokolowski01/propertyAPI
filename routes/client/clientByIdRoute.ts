@@ -34,6 +34,9 @@ export const clientIdRouter: Router = express.Router();
 
 
 clientIdRouter.get('/clients/:id', (req: Request, res: Response) => {
+
+    const clientId = parseInt(req.params.id);
+
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);
@@ -50,7 +53,7 @@ clientIdRouter.get('/clients/:id', (req: Request, res: Response) => {
             return;
         }
 
-        const client = clients.find(c => c.id === parseInt(req.params.id, 10));
+        const client = clients.find((c: Client) => c.id === clientId);
 
         if (client) {
             res.status(200).send({

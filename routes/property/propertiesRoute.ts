@@ -67,10 +67,10 @@ export const propertiesRouter = express.Router();
  *         description: Error reading data file
  */
 propertiesRouter.get('/properties', (req: Request, res: Response): void => {
-    
+
     const maxPricePerMeter = parseFloat(req.query.maxPricePerMeter as string);
     const maxRent = parseFloat(req.query.maxRent as string);
-    
+
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);

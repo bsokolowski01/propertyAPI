@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Reservation } from '../../interfaces/reservationInterface';
 
 export const reservationsRouter = express.Router();
 
@@ -45,7 +47,7 @@ export const reservationsRouter = express.Router();
  *         description: Error reading data file
  */
 
-reservationsRouter.get('/reservations', (req, res) => {
+reservationsRouter.get('/reservations', (req: Request, res: Response): void => {
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading data file:', err);
@@ -53,13 +55,20 @@ reservationsRouter.get('/reservations', (req, res) => {
             return;
         }
 
-        const reservations = JSON.parse(data);
+        let reservations: Reservation[];
+        try {
+            reservations = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing clients data:', parseError);
+            res.status(500).send({ error: 'Error parsing clients data' });
+            return;
+        }
 
-        if (!reservations || Object.keys(reservations).length === 0) {
+        if (!reservations || reservations.length === 0) {
             res.status(404).send({ error: 'Empty reservation list' });
             return;
         }
-        
+
         res.status(200).send({
             reservationsList: reservations.map(r => ({
                 ...r,
