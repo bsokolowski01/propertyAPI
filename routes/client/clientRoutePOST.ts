@@ -69,7 +69,7 @@ export const clientRouterPOST: Router = express.Router();
  */
 
 clientRouterPOST.post('/clients', (req: Request, res: Response): void => {
-    const { name, email, phone, address } = req.body;
+    const { name, email, phone, address }: Client = req.body;
 
     if (!name || !email || !phone || !address) {
         res.status(400).send({ error: 'All fields are required' });

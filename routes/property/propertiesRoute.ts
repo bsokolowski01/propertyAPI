@@ -113,7 +113,7 @@ propertiesRouter.get('/properties', (req: Request, res: Response): void => {
         }
 
         res.status(200).send({
-            propertiesList: properties.map((p: any) => ({
+            propertiesList: properties.map(p => ({
                 ...p,
                 _links: {
                     self: {

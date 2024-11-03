@@ -78,7 +78,7 @@ propertyIdRouter.get('/properties/:id', (req: Request, res: Response): void => {
             return;
         }
 
-        const property = properties.find((c: Property) => c.id === propertyId);
+        const property = properties.find((p: Property) => p.id === propertyId);
 
         if (!property) {
             res.status(404).send({ error: 'Property not found' });

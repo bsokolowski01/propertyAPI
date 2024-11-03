@@ -41,7 +41,8 @@ reservationByIdRouter.get('/reservations/:id', (req: Request, res: Response) => 
             reservations = JSON.parse(data);
         } catch (parseError) {
             console.error('Error parsing reservations or reservations not found');
-            return res.status(500).send({ error: 'Error parsing reservations or reservations not found' });
+            res.status(500).send({ error: 'Error parsing reservations or reservations not found' });
+            return; 
         }
 
         const reservation = reservations.find((r: Reservation) => r.id == reservationId);

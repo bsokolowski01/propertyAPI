@@ -59,7 +59,7 @@ clientIdRouterDEL.delete('/clients/:id', (req: Request, res: Response): void => 
             return;
         }
 
-        const updatedClients = clients.filter(client => client.id !== clientId);
+        const updatedClients = clients.filter((c: Client) => c.id !== clientId);
 
         if (clients.length === updatedClients.length) {
             res.status(404).json({ error: 'Client not found' });

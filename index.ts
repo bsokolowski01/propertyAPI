@@ -23,9 +23,9 @@ import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATC
 import { reservationsRouter } from './routes/reservation/reservationsRoute';
 import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST';
 import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute';
-// import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH';
-// import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL';
-// import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT';
+import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH';
+import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL';
+import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT';
 
 const app = express();
 
@@ -100,9 +100,9 @@ app.use("", propertyByIdRouterPATCH);
 app.use("", reservationsRouter);
 app.use("", reservationRouterPOST);
 app.use("", reservationByIdRouter);
-// app.use("", reservationByIdRouterPATCH);
-// app.use("", reservationByIdRouterDEL);
-// app.use("", reservationByIdRouterPUT);
+app.use("", reservationByIdRouterPATCH);
+app.use("", reservationByIdRouterDEL);
+app.use("", reservationByIdRouterPUT);
 
 app.listen(8989, () => {
     console.log('Started on 8989');

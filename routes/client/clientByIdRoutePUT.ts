@@ -57,7 +57,7 @@ interface Client {
 
 clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
-    const { name, email, phone, address } = req.body;
+    const { name, email, phone, address }: Client = req.body;
 
     if (!name || typeof name !== 'string' || name.trim() === '') {
         res.status(400).json({ error: 'Invalid name' });

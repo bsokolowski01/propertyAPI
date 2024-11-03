@@ -68,7 +68,7 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): 
             return;
         }
 
-        const propertyIndex = properties.findIndex((c: { id: number }) => c.id === propertyId);
+        const propertyIndex = properties.findIndex((p: Property) => p.id === propertyId);
 
         if (propertyIndex === -1) {
             res.status(404).send({ error: 'Property not found' });

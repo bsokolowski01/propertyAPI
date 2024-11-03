@@ -54,7 +54,7 @@ propertyIdRouterDEL.delete('/properties/:id', (req: Request, res: Response): voi
             return;
         }
 
-        const updatedProperties = properties.filter(property => property.id !== propertyId);
+        const updatedProperties = properties.filter((p: Property) => p.id !== propertyId);
 
         if (properties.length === updatedProperties.length) {
             res.status(404).send({ error: 'Property not found' });

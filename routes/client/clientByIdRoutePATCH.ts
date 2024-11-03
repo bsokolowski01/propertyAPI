@@ -39,7 +39,7 @@ export const clientRouterPATCH: Router = express.Router();
  */
 clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
-    const { email } = req.body;
+    const { email }: Client = req.body;
 
     try {
         if (!email || !validator.isEmail(email)) {
@@ -66,7 +66,7 @@ clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
             return;
         }
 
-        const clientIndex = clients.findIndex((client) => client.id === clientId);
+        const clientIndex = clients.findIndex((c: Client) => c.id === clientId);
 
         if (clientIndex === -1) {
             res.status(404).json({ error: 'Client not found' });
