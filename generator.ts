@@ -1,6 +1,27 @@
 import { faker } from '@faker-js/faker';
 
-export const clientGenerator = (id) => {
+interface Client {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+}
+
+interface Property {
+    id: number;
+    address: string;
+    description: string;
+    rooms: number;
+    surfaceArea: string;
+    status: string;
+    type: string;
+    rent?: string;
+    price?: string;
+    pricePerMeter?: string;
+}
+
+export const clientGenerator = (id: number): Client => {
     faker.seed(id);
     return {
         id: id,
@@ -11,7 +32,7 @@ export const clientGenerator = (id) => {
     };
 };
 
-export const propertyGenerator = (id) => {
+export const propertyGenerator = (id: number): Property => {
     faker.seed(id);
 
     const rooms = faker.number.int({ min: 1, max: 5 });
@@ -23,7 +44,7 @@ export const propertyGenerator = (id) => {
         : faker.number.int({ multipleOf: 100, min: 600000, max: 1000000 });
     const status = faker.helpers.arrayElement(['for sale', 'for rent', 'sold', 'rented']);
     
-    const property = {
+    const property: Property = {
         id: id,
         address: faker.location.streetAddress(),
         description: faker.lorem.sentence(),
@@ -41,10 +62,4 @@ export const propertyGenerator = (id) => {
     }
 
     return property;
-};
-
-export const clientIdGenerator = () => {
-    return {
-        clientId: faker.number.int({ min: 1, max: 10 }),
-    };
 };

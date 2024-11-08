@@ -1,5 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
+
+import { Reservation } from '../../interfaces/reservationInterface';
 
 export const reservationByIdRouterPUT = express.Router();
 
@@ -51,35 +53,49 @@ export const reservationByIdRouterPUT = express.Router();
  *         description: Error updating reservation data
  */
 
-reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
+reservationByIdRouterPUT.put('/reservations/:id', (req: Request, res: Response): void => {
     const reservationId = parseInt(req.params.id, 10);
-    const { propertyId, clientId, date } = req.body;
+    const { propertyId, clientId, date }: Reservation = req.body;
 
     // Walidacja pól
     if (typeof propertyId !== 'number' || propertyId <= 0) {
-        return res.status(400).send({ error: 'Invalid propertyId' });
+        res.status(400).send({ error: 'Invalid propertyId' });
+        return;
     }
     if (typeof clientId !== 'number' || clientId <= 0) {
-        return res.status(400).send({ error: 'Invalid clientId' });
+        res.status(400).send({ error: 'Invalid clientId' });
+        return;
     }
     if (!date || typeof date !== 'object' || !date.start || !date.end) {
-        return res.status(400).send({ error: 'Invalid date' });
+        res.status(400).send({ error: 'Invalid date' });
+        return;
     }
     if (isNaN(Date.parse(date.start)) || isNaN(Date.parse(date.end))) {
-        return res.status(400).send({ error: 'Invalid date format' });
+        res.status(400).send({ error: 'Invalid date format' });
+        return;
     }
 
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
-            res.status(500).send('Error reading data file');
+            console.error('Error reading data file:', err);
+            res.status(500).send({ error: 'Error reading data file' });
             return;
         }
 
-        let reservations = JSON.parse(data);
-        const reservationIndex = reservations.findIndex(r => r.id === reservationId);
+        let reservations: Reservation[];
+        try {
+            reservations = JSON.parse(data);
+        } catch (parseError) {
+            console.error('Error parsing reservations or reservations not found');
+            res.status(500).send({ error: 'Error parsing reservations or reservations not found' });
+            return;
+        }
+
+        const reservationIndex = reservations.findIndex((r: Reservation) => r.id === reservationId);
 
         if (reservationIndex === -1) {
-            return res.status(404).send('Reservation not found');
+            res.status(404).send({ error: 'Reservation not found' });
+            return; 
         }
 
         reservations[reservationIndex] = { ...reservations[reservationIndex], propertyId, clientId, date };
@@ -87,10 +103,21 @@ reservationByIdRouterPUT.put('/reservations/:id', (req, res) => {
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing reservations data:', writeError);
-                return res.status(500).send('Error updating reservation data');
+                res.status(500).send({ error: 'Error updating reservation data' });
+                return;
             }
 
-            res.status(200).send({ message: 'Reservation data updated successfully' });
+            res.status(200).send({
+                message: 'Reservation data updated successfully',
+                links: {
+                    self: {
+                        href: `${req.protocol}://${req.get('host')}${req.originalUrl}`
+                    },
+                    list: {
+                        href: `${req.protocol}://${req.get('host')}/reservations`
+                    }
+                }
+            });
         });
     });
 });
