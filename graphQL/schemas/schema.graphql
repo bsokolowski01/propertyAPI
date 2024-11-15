@@ -1,0 +1,49 @@
+scalar Date
+
+type Client {
+  id: Int
+  name: String
+  email: String
+  phone: String
+  address: String
+}
+
+type Property {
+  id: Int
+  address: String
+  description: String
+  rooms: Int
+  surfaceArea: String
+  status: String
+  type: String
+  rent: String
+  price: String
+  pricePerMeter: String
+}
+
+type Reservation {
+  id: Int
+  propertyId: Int
+  clientId: Int
+  date: ReservationDate
+}
+
+type ReservationDate {
+  start: Date
+  end: Date
+}
+
+type Query {
+  clients: [Client]
+  client(id: Int!): Client
+  properties: [Property]
+  property(id: Int!): Property
+  reservations: [Reservation]
+  reservation(id: Int!): Reservation
+}
+
+type Mutation {
+  addClient(name: String!, email: String!, phone: String!, address: String!): Client
+  updateClient(id: Int!, email: String): Client
+  deleteClient(id: Int!): Client
+}

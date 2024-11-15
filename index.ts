@@ -29,8 +29,6 @@ import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRo
 
 const app = express();
 
-//słowo klucz: rabarbar 24.10.2024
-
 app.use(express.json());
 
 const corsOptions: cors.CorsOptions = {
