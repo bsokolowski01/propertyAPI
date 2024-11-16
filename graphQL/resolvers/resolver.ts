@@ -1,9 +1,9 @@
 import fs from 'fs';
 import { GraphQLScalarType, Kind } from 'graphql';
 
-const clientsFilePath = '../data/client.json';
-const propertiesFilePath = '../data/property.json';
-const reservationsFilePath = '../data/reservation.json';
+const clientsFilePath = './data/client.json';
+const propertiesFilePath = './data/property.json';
+const reservationsFilePath = './data/reservation.json';
 
 const readJSONFile = (filePath: string) => {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -34,27 +34,27 @@ export const resolvers = {
     clients: () => {
       return readJSONFile(clientsFilePath);
     },
-    client: ({ id }: { id: number }) => {
+    client: (_: any, { id }: { id: number }) => {
       const clients = readJSONFile(clientsFilePath);
       return clients.find((client: any) => client.id === id);
     },
     properties: () => {
       return readJSONFile(propertiesFilePath);
     },
-    property: ({ id }: { id: number }) => {
+    property: (_: any, { id }: { id: number }) => {
       const properties = readJSONFile(propertiesFilePath);
       return properties.find((property: any) => property.id === id);
     },
     reservations: () => {
       return readJSONFile(reservationsFilePath);
     },
-    reservation: ({ id }: { id: number }) => {
+    reservation: (_: any, { id }: { id: number }) => {
       const reservations = readJSONFile(reservationsFilePath);
       return reservations.find((reservation: any) => reservation.id === id);
     },
   },
   Mutation: {
-    addClient: ({ name, email, phone, address }: { name: string, email: string, phone: string, address: string }) => {
+    addClient: (_: any, { name, email, phone, address }: { name: string, email: string, phone: string, address: string }) => {
       const clients = readJSONFile(clientsFilePath);
       const newClient = {
         id: clients.length + 1,
@@ -67,7 +67,7 @@ export const resolvers = {
       writeJSONFile(clientsFilePath, clients);
       return newClient;
     },
-    updateClient: ({ id, email }: { id: number, email: string }) => {
+    updateClient: (_: any, { id, email }: { id: number, email: string }) => {
       const clients = readJSONFile(clientsFilePath);
       const client = clients.find((client: any) => client.id === id);
       if (client) {
@@ -76,7 +76,7 @@ export const resolvers = {
       }
       return client;
     },
-    deleteClient: ({ id }: { id: number }) => {
+    deleteClient: (_: any, { id }: { id: number }) => {
       let clients = readJSONFile(clientsFilePath);
       const client = clients.find((client: any) => client.id === id);
       if (client) {

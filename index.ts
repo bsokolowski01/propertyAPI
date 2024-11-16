@@ -103,5 +103,5 @@ app.use("", reservationByIdRouterDEL);
 app.use("", reservationByIdRouterPUT);
 
 app.listen(8989, () => {
-    console.log('Started on 8989');
+    console.log('Server (RestAPI) started on 8989');
 });

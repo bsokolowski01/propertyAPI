@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch index.ts --watch ./interfaces --watch ./routes --ext ts --exec npx tsx index.ts"
+    "start": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx index.ts",
+    "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -22,7 +23,8 @@
     "npm": "^10.9.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "url": "^0.11.4"
+    "url": "^0.11.4",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
