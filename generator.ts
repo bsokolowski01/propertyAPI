@@ -1,25 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
-
-interface Property {
-    id: number;
-    address: string;
-    description: string;
-    rooms: number;
-    surfaceArea: string;
-    status: string;
-    type: string;
-    rent?: string;
-    price?: string;
-    pricePerMeter?: string;
-}
+import { Client } from './interfaces/clientInterface';
+import { Property } from './interfaces/propertyInterface';
 
 export const clientGenerator = (id: number): Client => {
     faker.seed(id);

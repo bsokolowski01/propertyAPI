@@ -1,13 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
+import { Client } from '../../interfaces/clientInterface'
 
 export const clientIdRouter: Router = express.Router();
 
