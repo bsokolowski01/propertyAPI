@@ -33,8 +33,61 @@ type ReservationDate {
   end: Date
 }
 
+input ClientInput {
+  name: String!
+  email: String!
+  phone: String!
+  address: String!
+}
+
+input PropertyInput {
+  address: String!
+  description: String!
+  rooms: Int!
+  surfaceArea: String!
+  status: String!
+  type: String!
+  rent: String!
+  price: String!
+  pricePerMeter: String!
+}
+
+input ClientFilter {
+  name: StringFilter
+  email: StringFilter
+  phone: StringFilter
+  address: StringFilter
+}
+
+input PropertyFilter {
+  address: String
+  description: String
+  rooms: Int
+  surfaceArea: String
+  status: String
+  type: String
+  rent: String
+  price: String
+  pricePerMeter: String
+}
+
+input StringFilter {
+  eq: String
+  contains: String
+  ne: String
+  notContains: String
+}
+
+input IntFilter {
+  eq: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+}
+
 type Query {
-  clients: [Client]
+  clients(filter: ClientFilter): [Client]
   client(id: Int!): Client
   properties: [Property]
   property(id: Int!): Property
@@ -43,7 +96,10 @@ type Query {
 }
 
 type Mutation {
-  addClient(name: String!, email: String!, phone: String!, address: String!): Client
+  addClient(input: ClientInput!): Client
   updateClient(id: Int!, email: String): Client
   deleteClient(id: Int!): Client
+  addProperty(input: PropertyInput!): Property
+  updateProperty(id: Int!, address: String): Property
+  deleteProperty(id: Int!): Property
 }

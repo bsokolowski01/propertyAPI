@@ -13,6 +13,23 @@ const writeJSONFile = (filePath: string, data: any) => {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 };
 
+const applyStringFilter = (value: string, filter: any) => {
+  if (filter.eq && value !== filter.eq) return false;
+  if (filter.contains && !value.includes(filter.contains)) return false;
+  if (filter.ne && value === filter.ne) return false;
+  if (filter.notContains && value.includes(filter.notContains)) return false;
+  return true;
+};
+
+const applyIntFilter = (value: number, filter: any) => {
+  if (filter.eq && value !== filter.eq) return false;
+  if (filter.gt && value <= filter.gt) return false;
+  if (filter.lt && value >= filter.lt) return false;
+  if (filter.gte && value < filter.gte) return false;
+  if (filter.lte && value > filter.lte) return false;
+  return true;
+};
+
 export const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
@@ -31,15 +48,42 @@ export const resolvers = {
     },
   }),
   Query: {
-    clients: () => {
-      return readJSONFile(clientsFilePath);
+    clients: (_: any, { filter }: { filter: any }) => {
+      let clients = readJSONFile(clientsFilePath);
+      if (filter) {
+        clients = clients.filter((client: any) => {
+          return (
+            (!filter.name || applyStringFilter(client.name, filter.name)) &&
+            (!filter.email || applyStringFilter(client.email, filter.email)) &&
+            (!filter.phone || applyStringFilter(client.phone, filter.phone)) &&
+            (!filter.address || applyStringFilter(client.address, filter.address))
+          );
+        });
+      }
+      return clients;
     },
     client: (_: any, { id }: { id: number }) => {
       const clients = readJSONFile(clientsFilePath);
       return clients.find((client: any) => client.id === id);
     },
-    properties: () => {
-      return readJSONFile(propertiesFilePath);
+    properties: (_: any, { filter }: { filter: any }) => {
+      let properties = readJSONFile(propertiesFilePath);
+      if (filter) {
+        properties = properties.filter((property: any) => {
+          return (
+            (!filter.address || applyStringFilter(property.address, filter.address)) &&
+            (!filter.description || applyStringFilter(property.description, filter.description)) &&
+            (!filter.rooms || applyIntFilter(property.rooms, filter.rooms)) &&
+            (!filter.surfaceArea || applyStringFilter(property.surfaceArea, filter.surfaceArea)) &&
+            (!filter.status || applyStringFilter(property.status, filter.status)) &&
+            (!filter.type || applyStringFilter(property.type, filter.type)) &&
+            (!filter.rent || applyStringFilter(property.rent, filter.rent)) &&
+            (!filter.price || applyStringFilter(property.price, filter.price)) &&
+            (!filter.pricePerMeter || applyStringFilter(property.pricePerMeter, filter.pricePerMeter))
+          );
+        });
+      }
+      return properties;
     },
     property: (_: any, { id }: { id: number }) => {
       const properties = readJSONFile(propertiesFilePath);
@@ -54,14 +98,11 @@ export const resolvers = {
     },
   },
   Mutation: {
-    addClient: (_: any, { name, email, phone, address }: { name: string, email: string, phone: string, address: string }) => {
+    addClient: (_: any, { input }: { input: any }) => {
       const clients = readJSONFile(clientsFilePath);
       const newClient = {
         id: clients.length + 1,
-        name,
-        email,
-        phone,
-        address
+        ...input
       };
       clients.push(newClient);
       writeJSONFile(clientsFilePath, clients);
