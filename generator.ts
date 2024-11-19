@@ -33,7 +33,7 @@ export const propertyGenerator = (id: number): Property => {
         rooms,
         surfaceArea: `${surfaceArea} m2`,
         status,
-        type: faker.helpers.arrayElement(['apartment', 'house', 'land']),
+        type: faker.helpers.arrayElement(['apartment', 'house', 'office']),
     };
 
     if (status === 'for rent' || status === 'rented') {

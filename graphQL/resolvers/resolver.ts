@@ -153,6 +153,7 @@ export const resolvers = {
     },
   },
   Mutation: {
+    // Clients
     addClient: (_: any, { input }: { input: any }) => {
       const clients = readJSONFile(clientsFilePath);
       const newClient = {
@@ -163,20 +164,11 @@ export const resolvers = {
       writeJSONFile(clientsFilePath, clients);
       return newClient;
     },
-    updateClient: (_: any, { id, name, email, phone, address }: {
-      id: number,
-      name: string,
-      email: string,
-      phone: string,
-      address: string,
-    }) => {
+    updateClient: (_: any, { id, input }: { id: number, input: any }) => {
       const clients = readJSONFile(clientsFilePath);
       const client = clients.find((client: any) => client.id === id);
       if (client) {
-        client.name = name;
-        client.email = email;
-        client.phone = phone;
-        client.address = address;
+        Object.assign(client, input)
         writeJSONFile(clientsFilePath, clients);
       }
       return client;
@@ -189,6 +181,73 @@ export const resolvers = {
         writeJSONFile(clientsFilePath, clients);
       }
       return client;
+    },
+    // Properties
+    addProperty: (_: any, { input }: { input: any }) => {
+      const properties = readJSONFile(propertiesFilePath);
+      const newProperty = {
+        id: properties.length + 1,
+        ...input,
+      };
+      properties.push(newProperty);
+      writeJSONFile(propertiesFilePath, properties);
+      return newProperty;
+    },
+    updateProperty: (_: any, { id, input }: { id: number, input: any }) => {
+      const properties = readJSONFile(propertiesFilePath);
+      const property = properties.find((property: any) => property.id === id);
+      if (property) {
+        Object.assign(property, input);
+        writeJSONFile(propertiesFilePath, properties);
+      }
+      return property;
+    },
+    deleteProperty: (_: any, { id }: { id: number }) => {
+      let properties = readJSONFile(propertiesFilePath);
+      const property = properties.find((property: any) => property.id === id);
+      if (property) {
+        properties = properties.filter((property: any) => property.id !== id);
+        writeJSONFile(propertiesFilePath, properties);
+      }
+      return property;
+    },
+    // Reservations
+    addReservation: (_: any, { input }: { input: any }) => {
+      const reservations = readJSONFile(reservationsFilePath);
+      const dateStart = new Date();
+      const dateEnd = new Date(dateStart);
+      dateEnd.setDate(dateEnd.getDate() + 3);
+    
+      const newReservation = {
+        id: reservations.length + 1,
+        ...input,
+        date: {
+          start: dateStart.toISOString().split('T')[0],
+          end: dateEnd.toISOString().split('T')[0]
+        }
+      };
+    
+      reservations.push(newReservation);
+      writeJSONFile(reservationsFilePath, reservations);
+      return newReservation;
+    },
+    updateReservation: (_: any, { id, input }: { id: number, input: any }) => {
+      const reservations = readJSONFile(reservationsFilePath);
+      const reservation = reservations.find((reservation: any) => reservation.id === id);
+      if (reservation) {
+        Object.assign(reservation, input);
+        writeJSONFile(reservationsFilePath, reservations);
+      }
+      return reservation;
+    },
+    deleteReservation: (_: any, { id }: { id: number }) => {
+      let reservations = readJSONFile(reservationsFilePath);
+      const reservation = reservations.find((reservation: any) => reservation.id === id);
+      if (reservation) {
+        reservations = reservations.filter((reservation: any) => reservation.id !== id);
+        writeJSONFile(reservationsFilePath, reservations);
+      }
+      return reservation;
     },
   },
 };

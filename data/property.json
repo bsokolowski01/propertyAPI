@@ -6,7 +6,7 @@
     "rooms": 3,
     "surfaceArea": "86 m2",
     "status": "for rent",
-    "type": "land",
+    "type": "office",
     "rent": "4300 zł"
   },
   {
@@ -58,7 +58,7 @@
     "rooms": 5,
     "surfaceArea": "66 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "office",
     "price": "928500 zł",
     "pricePerMeter": "14068 zł/m2"
   },
@@ -69,7 +69,7 @@
     "rooms": 1,
     "surfaceArea": "44 m2",
     "status": "sold",
-    "type": "land",
+    "type": "office",
     "price": "331500 zł",
     "pricePerMeter": "7534 zł/m2"
   },
@@ -91,19 +91,8 @@
     "rooms": 1,
     "surfaceArea": "35 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "office",
     "price": "348700 zł",
     "pricePerMeter": "9963 zł/m2"
-  },
-  {
-    "id": 10,
-    "address": "3171 Marley Villages",
-    "description": "Doloremque tonsor perspiciatis.",
-    "rooms": 4,
-    "surfaceArea": "51 m2",
-    "status": "sold",
-    "type": "land",
-    "price": "853500 zł",
-    "pricePerMeter": "16735 zł/m2"
   }
 ]
