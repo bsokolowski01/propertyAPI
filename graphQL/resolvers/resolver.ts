@@ -30,19 +30,34 @@ const applyIntFilter = (value: number, filter: any) => {
   return true;
 };
 
+const parseDate = (value: string) => {
+  const [day, month, year] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const applyDateFilter = (value: string, filter: any) => {
+  const dateValue = parseDate(value);
+  if (filter.eq && dateValue.getTime() !== parseDate(filter.eq).getTime()) return false;
+  if (filter.gt && dateValue.getTime() <= parseDate(filter.gt).getTime()) return false;
+  if (filter.lt && dateValue.getTime() >= parseDate(filter.lt).getTime()) return false;
+  if (filter.gte && dateValue.getTime() < parseDate(filter.gte).getTime()) return false;
+  if (filter.lte && dateValue.getTime() > parseDate(filter.lte).getTime()) return false;
+  return true;
+};
+
 export const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
-    description: 'Custom scalar type for dates',
+    description: 'Custom scalar type for dates in format dd-mm-yyyy',
     parseValue(value: any) {
-      return new Date(value);
+      return parseDate(value);
     },
     serialize(value: any) {
-      return value instanceof Date ? value.toISOString() : value;
+      return value instanceof Date ? `${value.getDate()}-${value.getMonth() + 1}-${value.getFullYear()}` : value;
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.STRING) {
-        return new Date(ast.value);
+        return parseDate(ast.value);
       }
       return null;
     },
@@ -89,8 +104,19 @@ export const resolvers = {
       const properties = readJSONFile(propertiesFilePath);
       return properties.find((property: any) => property.id === id);
     },
-    reservations: () => {
-      return readJSONFile(reservationsFilePath);
+    reservations: (_: any, { filter }: { filter: any }) => {
+      let reservations = readJSONFile(reservationsFilePath);
+      if (filter) {
+        reservations = reservations.filter((reservation: any) => {
+          return (
+            (!filter.clientId || applyIntFilter(reservation.clientId, filter.clientId)) &&
+            (!filter.propertyId || applyIntFilter(reservation.propertyId, filter.propertyId)) &&
+            (!filter.date || applyDateFilter(reservation.date.start, filter.date)) &&
+            (!filter.date || applyDateFilter(reservation.date.end, filter.date))
+          );
+        });
+      }
+      return reservations;
     },
     reservation: (_: any, { id }: { id: number }) => {
       const reservations = readJSONFile(reservationsFilePath);
@@ -108,11 +134,20 @@ export const resolvers = {
       writeJSONFile(clientsFilePath, clients);
       return newClient;
     },
-    updateClient: (_: any, { id, email }: { id: number, email: string }) => {
+    updateClient: (_: any, { id, name, email, phone, address }: {
+      id: number,
+      name: string,
+      email: string,
+      phone: string,
+      address: string
+    }) => {
       const clients = readJSONFile(clientsFilePath);
       const client = clients.find((client: any) => client.id === id);
       if (client) {
+        client.name = name;
         client.email = email;
+        client.phone = phone;
+        client.address = address;
         writeJSONFile(clientsFilePath, clients);
       }
       return client;
