@@ -40,7 +40,7 @@ export const propertyGenerator = (id: number): Property => {
         property.rent = `${faker.number.int({multipleOf: 100, min: 2000, max: 4500})} zł`;
     } else {
         property.price = `${price} zł`;
-        property.pricePerMeter = `${(price / surfaceArea).toFixed(2)} zł/m2`;
+        property.pricePerMeter = `${(price / surfaceArea).toFixed(0)} zł/m2`;
     }
 
     return property;

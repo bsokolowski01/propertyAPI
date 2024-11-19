@@ -30,34 +30,60 @@ const applyIntFilter = (value: number, filter: any) => {
   return true;
 };
 
-const parseDate = (value: string) => {
-  const [day, month, year] = value.split('-').map(Number);
-  return new Date(year, month - 1, day);
-};
-
 const applyDateFilter = (value: string, filter: any) => {
-  const dateValue = parseDate(value);
-  if (filter.eq && dateValue.getTime() !== parseDate(filter.eq).getTime()) return false;
-  if (filter.gt && dateValue.getTime() <= parseDate(filter.gt).getTime()) return false;
-  if (filter.lt && dateValue.getTime() >= parseDate(filter.lt).getTime()) return false;
-  if (filter.gte && dateValue.getTime() < parseDate(filter.gte).getTime()) return false;
-  if (filter.lte && dateValue.getTime() > parseDate(filter.lte).getTime()) return false;
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+  const dateValue = formatDate(new Date(value));
+  const filterDateEq = filter.eq ? formatDate(new Date(filter.eq)) : null;
+  const filterDateGt = filter.gt ? formatDate(new Date(filter.gt)) : null;
+  const filterDateLt = filter.lt ? formatDate(new Date(filter.lt)) : null;
+  const filterDateGte = filter.gte ? formatDate(new Date(filter.gte)) : null;
+  const filterDateLte = filter.lte ? formatDate(new Date(filter.lte)) : null;
+
+  if (filter.eq && dateValue !== filterDateEq) return false;
+  if (filter.gt && filterDateGt && dateValue <= filterDateGt) return false;
+  if (filter.lt && filterDateLt && dateValue >= filterDateLt) return false;
+  if (filter.gte && filterDateGte && dateValue < filterDateGte) return false;
+  if (filter.lte && filterDateLte && dateValue > filterDateLte) return false;
+
   return true;
 };
+
+
 
 export const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
-    description: 'Custom scalar type for dates in format dd-mm-yyyy',
+    description: 'Custom scalar type for dates in format yyyy-mm-dd',
     parseValue(value: any) {
-      return parseDate(value);
+      const parsedDate = new Date(value);
+      if (isNaN(parsedDate.getTime())) {
+        throw new TypeError(`Invalid date value: ${value}`);
+      }
+      return parsedDate;
     },
     serialize(value: any) {
-      return value instanceof Date ? `${value.getDate()}-${value.getMonth() + 1}-${value.getFullYear()}` : value;
+      const date = value instanceof Date ? value : new Date(value);
+      if (isNaN(date.getTime())) {
+        throw new TypeError(`Invalid date value: ${value}`);
+      }
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${year}-${month}-${day}`;
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.STRING) {
-        return parseDate(ast.value);
+        const parsedDate = new Date(ast.value);
+        if (isNaN(parsedDate.getTime())) {
+          throw new TypeError(`Invalid date value: ${ast.value}`);
+        }
+        return parsedDate;
       }
       return null;
     },
@@ -85,16 +111,19 @@ export const resolvers = {
       let properties = readJSONFile(propertiesFilePath);
       if (filter) {
         properties = properties.filter((property: any) => {
+          const surfaceArea = property.surfaceArea ? parseInt(property.surfaceArea.replace(' m2', ''), 10) : null;
+          const price = property.price ? parseInt(property.price.replace(' zł', ''), 10) : null;
+          const pricePerMeter = property.pricePerMeter ? parseInt(property.pricePerMeter.replace(' zł/m2', ''), 10) : null;
           return (
             (!filter.address || applyStringFilter(property.address, filter.address)) &&
             (!filter.description || applyStringFilter(property.description, filter.description)) &&
-            (!filter.rooms || applyIntFilter(property.rooms, filter.rooms)) &&
-            (!filter.surfaceArea || applyStringFilter(property.surfaceArea, filter.surfaceArea)) &&
+            (!filter.rooms || applyStringFilter(property.rooms, filter.rooms)) &&
+            (!filter.surfaceArea || (surfaceArea !== null && applyIntFilter(surfaceArea, filter.surfaceArea))) &&
             (!filter.status || applyStringFilter(property.status, filter.status)) &&
             (!filter.type || applyStringFilter(property.type, filter.type)) &&
             (!filter.rent || applyStringFilter(property.rent, filter.rent)) &&
-            (!filter.price || applyStringFilter(property.price, filter.price)) &&
-            (!filter.pricePerMeter || applyStringFilter(property.pricePerMeter, filter.pricePerMeter))
+            (!filter.price || (price !== null && applyIntFilter(price, filter.price))) &&
+            (!filter.pricePerMeter || (pricePerMeter !== null && applyIntFilter(pricePerMeter, filter.pricePerMeter)))
           );
         });
       }
@@ -111,8 +140,8 @@ export const resolvers = {
           return (
             (!filter.clientId || applyIntFilter(reservation.clientId, filter.clientId)) &&
             (!filter.propertyId || applyIntFilter(reservation.propertyId, filter.propertyId)) &&
-            (!filter.date || applyDateFilter(reservation.date.start, filter.date)) &&
-            (!filter.date || applyDateFilter(reservation.date.end, filter.date))
+            (!filter.date || !filter.date.start || applyDateFilter(reservation.date.start, filter.date.start)) &&
+            (!filter.date || !filter.date.end || applyDateFilter(reservation.date.end, filter.date.end))
           );
         });
       }
@@ -128,7 +157,7 @@ export const resolvers = {
       const clients = readJSONFile(clientsFilePath);
       const newClient = {
         id: clients.length + 1,
-        ...input
+        ...input,
       };
       clients.push(newClient);
       writeJSONFile(clientsFilePath, clients);
@@ -139,7 +168,7 @@ export const resolvers = {
       name: string,
       email: string,
       phone: string,
-      address: string
+      address: string,
     }) => {
       const clients = readJSONFile(clientsFilePath);
       const client = clients.find((client: any) => client.id === id);
@@ -161,5 +190,5 @@ export const resolvers = {
       }
       return client;
     },
-  }
+  },
 };

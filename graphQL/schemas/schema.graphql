@@ -74,18 +74,23 @@ input PropertyFilter {
   address: StringFilter
   description: StringFilter
   rooms: IntFilter
-  surfaceArea: StringFilter
+  surfaceArea: IntFilter
   status: StringFilter
   type: StringFilter
   rent: StringFilter
-  price: StringFilter
-  pricePerMeter: StringFilter
+  price: IntFilter
+  pricePerMeter: IntFilter
 }
 
 input ReservationFilter {
   propertyId: IntFilter
   clientId: IntFilter
-  date: DateFilter
+  date: DateRangeFilter
+}
+
+input DateRangeFilter {
+  start: DateFilter
+  end: DateFilter
 }
 
 input StringFilter {
