@@ -54,7 +54,19 @@ const applyDateFilter = (value: string, filter: any) => {
   return true;
 };
 
+const applySort = (data: any[], sortField: string, sortOrder: 'asc' | 'desc') => {
+  return data.sort((a, b) => {
+    if (a[sortField] < b[sortField]) return sortOrder === 'asc' ? -1 : 1;
+    if (a[sortField] > b[sortField]) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+};
 
+const applyPagination = (data: any[], page: number, pageSize: number) => {
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  return data.slice(start, end);
+};
 
 export const resolvers = {
   Date: new GraphQLScalarType({
@@ -89,7 +101,7 @@ export const resolvers = {
     },
   }),
   Query: {
-    clients: (_: any, { filter }: { filter: any }) => {
+    clients: (_: any, { filter, sort, page, pageSize }: { filter: any, sort: any, page: number, pageSize: number }) => {
       let clients = readJSONFile(clientsFilePath);
       if (filter) {
         clients = clients.filter((client: any) => {
@@ -101,39 +113,55 @@ export const resolvers = {
           );
         });
       }
+      if (sort) {
+        clients = applySort(clients, sort.field, sort.order);
+      }
+      if (page && pageSize) {
+        clients = applyPagination(clients, page, pageSize);
+      }
       return clients;
     },
     client: (_: any, { id }: { id: number }) => {
       const clients = readJSONFile(clientsFilePath);
       return clients.find((client: any) => client.id === id);
     },
-    properties: (_: any, { filter }: { filter: any }) => {
+    properties: (_: any, { filter, sort, page, pageSize }: { filter: any, sort: any, page: number, pageSize: number }) => {
       let properties = readJSONFile(propertiesFilePath);
       if (filter) {
         properties = properties.filter((property: any) => {
           const surfaceArea = property.surfaceArea ? parseInt(property.surfaceArea.replace(' m2', ''), 10) : null;
+          const rent = property.rent ? parseInt(property.rent.replace(' zł', ''), 10) : null;
           const price = property.price ? parseInt(property.price.replace(' zł', ''), 10) : null;
           const pricePerMeter = property.pricePerMeter ? parseInt(property.pricePerMeter.replace(' zł/m2', ''), 10) : null;
+
           return (
             (!filter.address || applyStringFilter(property.address, filter.address)) &&
             (!filter.description || applyStringFilter(property.description, filter.description)) &&
-            (!filter.rooms || applyStringFilter(property.rooms, filter.rooms)) &&
+            (!filter.rooms || applyIntFilter(property.rooms, filter.rooms)) &&
             (!filter.surfaceArea || (surfaceArea !== null && applyIntFilter(surfaceArea, filter.surfaceArea))) &&
             (!filter.status || applyStringFilter(property.status, filter.status)) &&
             (!filter.type || applyStringFilter(property.type, filter.type)) &&
-            (!filter.rent || applyStringFilter(property.rent, filter.rent)) &&
+            (!filter.rent || (rent !== null && applyIntFilter(rent, filter.rent))) &&
             (!filter.price || (price !== null && applyIntFilter(price, filter.price))) &&
             (!filter.pricePerMeter || (pricePerMeter !== null && applyIntFilter(pricePerMeter, filter.pricePerMeter)))
           );
         });
       }
+
+      if (sort) {
+        properties = applySort(properties, sort.field, sort.order);
+      }
+      if (page && pageSize) {
+        properties = applyPagination(properties, page, pageSize);
+      }
+
       return properties;
     },
     property: (_: any, { id }: { id: number }) => {
       const properties = readJSONFile(propertiesFilePath);
       return properties.find((property: any) => property.id === id);
     },
-    reservations: (_: any, { filter }: { filter: any }) => {
+    reservations: (_: any, { filter, sort, page, pageSize }: { filter: any, sort: any, page: number, pageSize: number }) => {
       let reservations = readJSONFile(reservationsFilePath);
       if (filter) {
         reservations = reservations.filter((reservation: any) => {
@@ -145,6 +173,14 @@ export const resolvers = {
           );
         });
       }
+
+      if (sort) {
+        reservations = applySort(reservations, sort.field, sort.order);
+      }
+      if (page && pageSize) {
+        reservations = applyPagination(reservations, page, pageSize);
+      }
+
       return reservations;
     },
     reservation: (_: any, { id }: { id: number }) => {
@@ -217,7 +253,7 @@ export const resolvers = {
       const dateStart = new Date();
       const dateEnd = new Date(dateStart);
       dateEnd.setDate(dateEnd.getDate() + 3);
-    
+
       const newReservation = {
         id: reservations.length + 1,
         ...input,
@@ -226,7 +262,7 @@ export const resolvers = {
           end: dateEnd.toISOString().split('T')[0]
         }
       };
-    
+
       reservations.push(newReservation);
       writeJSONFile(reservationsFilePath, reservations);
       return newReservation;

@@ -77,7 +77,7 @@ input PropertyFilter {
   surfaceArea: IntFilter
   status: StringFilter
   type: StringFilter
-  rent: StringFilter
+  rent: IntFilter
   price: IntFilter
   pricePerMeter: IntFilter
 }
@@ -116,12 +116,17 @@ input DateFilter {
   lte: Date
 }
 
+input SortInput {
+  field: String
+  order: String
+}
+
 type Query {
-  clients(filter: ClientFilter): [Client]
+  clients(filter: ClientFilter, sort: SortInput, page: Int, pageSize: Int): [Client]
   client(id: Int!): Client
-  properties(filter: PropertyFilter): [Property]
+  properties(filter: PropertyFilter, sort: SortInput, page: Int, pageSize: Int): [Property]
   property(id: Int!): Property
-  reservations(filter: ReservationFilter): [Reservation]
+  reservations(filter: ReservationFilter, sort: SortInput, page: Int, pageSize: Int): [Reservation]
   reservation(id: Int!): Reservation
 }
 
