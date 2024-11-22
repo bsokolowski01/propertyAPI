@@ -66,7 +66,7 @@ const applyPagination = (data: any[], page: number, pageSize: number) => {
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   return data.slice(start, end);
-};
+};  
 
 export const resolvers = {
   Date: new GraphQLScalarType({
@@ -88,7 +88,7 @@ export const resolvers = {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
       return `${year}-${month}-${day}`;
-    },
+    }, 
     parseLiteral(ast) {
       if (ast.kind === Kind.STRING) {
         const parsedDate = new Date(ast.value);

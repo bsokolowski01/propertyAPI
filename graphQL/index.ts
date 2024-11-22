@@ -3,17 +3,17 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import fs from 'fs';
 import cors from 'cors';
+import { resolvers } from './resolvers/resolver';
 
 const typeDefs = fs.readFileSync('./graphQL/schemas/schema.graphql', { encoding: 'utf-8' });
 
-import { resolvers } from './resolvers/resolver';
 
 const app = express();
 app.use(express.json());
 
 // CORS configuration
 const corsOptions: cors.CorsOptions = {
-  origin: 'http://localhost:8989',
+  origin: 'http://localhost:9090',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'X-Content-Type-Options', 'Cache-Control'],
   credentials: true,

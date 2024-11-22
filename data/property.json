@@ -94,5 +94,16 @@
     "type": "office",
     "price": "348700 zł",
     "pricePerMeter": "9963 zł/m2"
+  },
+  {
+    "id": 10,
+    "address": "3171 Marley Villages",
+    "description": "Doloremque tonsor perspiciatis.",
+    "rooms": 4,
+    "surfaceArea": "51 m2",
+    "status": "sold",
+    "type": "office",
+    "price": "853500 zł",
+    "pricePerMeter": "16735 zł/m2"
   }
 ]
