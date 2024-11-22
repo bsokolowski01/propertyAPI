@@ -1,0 +1,143 @@
+scalar Date
+
+type Client {
+  id: Int
+  name: String
+  email: String
+  phone: String
+  address: String
+}
+
+type Property {
+  id: Int
+  address: String
+  description: String
+  rooms: Int
+  surfaceArea: String
+  status: String
+  type: String
+  rent: String
+  price: String
+  pricePerMeter: String
+}
+
+type Reservation {
+  id: Int
+  propertyId: Int
+  clientId: Int
+  date: ReservationDate
+}
+
+type ReservationDate {
+  start: Date
+  end: Date
+}
+
+input ClientInput {
+  name: String
+  email: String
+  phone: String
+  address: String
+}
+
+input PropertyInput {
+  address: String
+  description: String
+  rooms: Int
+  surfaceArea: String
+  status: String
+  type: String
+  rent: String
+  price: String
+  pricePerMeter: String
+}
+
+input ReservationInput {
+  propertyId: Int
+  clientId: Int
+  date: ReservationDateInput
+}
+
+input ReservationDateInput {
+  start: Date
+  end: Date
+}
+
+input ClientFilter {
+  name: StringFilter
+  email: StringFilter
+  phone: StringFilter
+  address: StringFilter
+}
+
+input PropertyFilter {
+  address: StringFilter
+  description: StringFilter
+  rooms: IntFilter
+  surfaceArea: IntFilter
+  status: StringFilter
+  type: StringFilter
+  rent: IntFilter
+  price: IntFilter
+  pricePerMeter: IntFilter
+}
+
+input ReservationFilter {
+  propertyId: IntFilter
+  clientId: IntFilter
+  date: DateRangeFilter
+}
+
+input DateRangeFilter {
+  start: DateFilter
+  end: DateFilter
+}
+
+input StringFilter {
+  eq: String
+  contains: String
+  ne: String
+  notContains: String
+}
+
+input IntFilter {
+  eq: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+}
+
+input DateFilter {
+  eq: Date
+  gt: Date
+  lt: Date
+  gte: Date
+  lte: Date
+}
+
+input SortInput {
+  field: String
+  order: String
+}
+
+type Query {
+  clients(filter: ClientFilter, sort: SortInput, page: Int, pageSize: Int): [Client]
+  client(id: Int!): Client
+  properties(filter: PropertyFilter, sort: SortInput, page: Int, pageSize: Int): [Property]
+  property(id: Int!): Property
+  reservations(filter: ReservationFilter, sort: SortInput, page: Int, pageSize: Int): [Reservation]
+  reservation(id: Int!): Reservation
+}
+
+type Mutation {
+  addClient(input: ClientInput!): Client
+  updateClient(id: Int!, input: ClientInput!): Client
+  deleteClient(id: Int!): Client
+  addProperty(input: PropertyInput!): Property
+  updateProperty(id: Int!, input: PropertyInput): Property
+  deleteProperty(id: Int!): Property
+  addReservation(input: ReservationInput!): Reservation
+  updateReservation(id: Int!, input: ReservationInput!): Reservation
+  deleteReservation(id: Int!): Reservation
+}

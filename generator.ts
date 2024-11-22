@@ -1,25 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
-
-interface Property {
-    id: number;
-    address: string;
-    description: string;
-    rooms: number;
-    surfaceArea: string;
-    status: string;
-    type: string;
-    rent?: string;
-    price?: string;
-    pricePerMeter?: string;
-}
+import { Client } from './interfaces/clientInterface';
+import { Property } from './interfaces/propertyInterface';
 
 export const clientGenerator = (id: number): Client => {
     faker.seed(id);
@@ -51,14 +33,14 @@ export const propertyGenerator = (id: number): Property => {
         rooms,
         surfaceArea: `${surfaceArea} m2`,
         status,
-        type: faker.helpers.arrayElement(['apartment', 'house', 'land']),
+        type: faker.helpers.arrayElement(['apartment', 'house', 'office']),
     };
 
     if (status === 'for rent' || status === 'rented') {
         property.rent = `${faker.number.int({multipleOf: 100, min: 2000, max: 4500})} zł`;
     } else {
         property.price = `${price} zł`;
-        property.pricePerMeter = `${(price / surfaceArea).toFixed(2)} zł/m2`;
+        property.pricePerMeter = `${(price / surfaceArea).toFixed(0)} zł/m2`;
     }
 
     return property;

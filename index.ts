@@ -29,8 +29,6 @@ import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRo
 
 const app = express();
 
-//słowo klucz: rabarbar 24.10.2024
-
 app.use(express.json());
 
 const corsOptions: cors.CorsOptions = {
@@ -105,5 +103,5 @@ app.use("", reservationByIdRouterDEL);
 app.use("", reservationByIdRouterPUT);
 
 app.listen(8989, () => {
-    console.log('Started on 8989');
+    console.log('Server (RestAPI) started on 8989');
 });

@@ -4,13 +4,7 @@ import validator from 'validator';
 
 export const clientByIdRouterPUT: Router = express.Router();
 
-interface Client {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-}
+import { Client } from '../../interfaces/clientInterface'
 
 /**
  * @swagger
@@ -59,25 +53,22 @@ clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
     const { name, email, phone, address }: Client = req.body;
 
-    if (!name || typeof name !== 'string' || name.trim() === '') {
+    if (!validator.isLength(name, { min: 1 }) || !validator.isAlpha(name.replace(/\s/g, ''))) {
         res.status(400).json({ error: 'Invalid name' });
         return;
     }
 
-    try {
-        if (!email || !validator.isEmail(email)) {
-            throw new Error('Invalid email address');
-        }
-    } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
+    if (!validator.isEmail(email)) {
+        res.status(400).json({ error: 'Invalid email address' });
         return;
     }
 
-    if (!phone || typeof phone !== 'string') {
+    if (!validator.isMobilePhone(phone, 'any')) {
         res.status(400).json({ error: 'Invalid phone' });
         return;
     }
-    if (!address || typeof address !== 'string' || address.trim() === '') {
+
+    if (!validator.isLength(address, { min: 1 })) {
         res.status(400).json({ error: 'Invalid address' });
         return;
     }
