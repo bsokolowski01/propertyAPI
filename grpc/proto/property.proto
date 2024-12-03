@@ -1,0 +1,54 @@
+syntax = "proto3";    
+
+package propertyAPI;
+
+service PropertyService {
+  rpc GetClient (ClientRequest) returns (ClientResponse);
+  rpc GetProperty (PropertyRequest) returns (PropertyResponse);
+  rpc GetReservation (ReservationRequest) returns (ReservationResponse);
+}
+
+message ClientRequest {
+  int32 clientId = 1;
+}
+
+message ClientResponse {
+  int32 clientId = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string address = 5;
+}
+
+message PropertyRequest {
+  int32 propertyId = 1;
+}
+
+message PropertyResponse {
+  int32 propertyId = 1;
+  string address = 2;
+  string description = 3;
+  int32 rooms = 4;
+  string surfaceArea = 5;
+  string status = 6;
+  string type = 7;
+  string rent = 8;
+  string price = 9;
+  string pricePerMeter = 10;
+}
+
+message ReservationRequest {
+  int32 reservationId = 1;
+}
+
+message ReservationResponse {
+  int32 reservationId = 1;
+  int32 propertyId = 2;
+  int32 clientId = 3;
+  ReservationDate date = 4;
+}
+
+message ReservationDate {
+  string start = 1;
+  string end = 2;
+}
