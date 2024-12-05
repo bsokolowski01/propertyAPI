@@ -74,6 +74,14 @@ const reservationGenerator = (id: number): Reservation => {
     return reservation;
 };
 
+const checkAndCreateFolder = async (folderPath: string) => {
+    try {
+        await fs.mkdir(folderPath, { recursive: true });
+    } catch (error) {
+        console.error(`Error creating folder ${folderPath}:`, error);
+    }
+};
+
 const checkAndCreateFile = async (filePath: string) => {
     try {
         await fs.access(filePath);
@@ -83,6 +91,8 @@ const checkAndCreateFile = async (filePath: string) => {
 };
 
 const generateData = async () => {
+
+    await checkAndCreateFolder('./data');
 
     await Promise.all([
         checkAndCreateFile('./data/client.json'),
