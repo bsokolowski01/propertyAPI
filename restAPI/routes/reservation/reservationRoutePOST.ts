@@ -1,9 +1,8 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-
-import { Reservation } from '../../interfaces/reservationInterface';
-import { Property } from '../../interfaces/propertyInterface';
-import { Client } from '../../interfaces/clientInterface';
+import { Reservation } from '../../../interfaces/reservationInterface';
+import { Property } from '../../../interfaces/propertyInterface';
+import { Client } from '../../../interfaces/clientInterface';
 
 export const reservationRouterPOST: Router = express.Router();
 
@@ -115,13 +114,13 @@ reservationRouterPOST.post('/reservations', (req: Request, res: Response): void 
                 const lastId = reservations.length > 0 ? reservations[reservations.length - 1].id : 0;
                 const newId = lastId + 1;
 
-                const newReservation = {
+                const newReservation: Reservation = {
                     id: newId,
                     propertyId,
                     clientId,
                     date: {
-                        start: new Date().toISOString(),
-                        end: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString() // 3 days later
+                        start: new Date(),
+                        end: new Date(new Date().setDate(new Date().getDate() + 3))
                     },
                 };
 

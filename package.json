@@ -5,8 +5,8 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx index.ts",
+    "start": "npx tsx generator.ts",
+    "startRestApi": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx ./restAPI/index.ts",
     "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
     "startGrpcServer": "nodemon --watch ./grpc --exec node ./grpc/server.js",
     "startGrpcClient": "node ./grpc/client.js"

@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-import { Property, PropertyStatus, PropertyType } from '../../interfaces/propertyInterface';
+import { Property, PropertyStatus, PropertyType } from '../../../interfaces/propertyInterface';
 
 export const propertyRouterPOST: Router = express.Router();
 
@@ -23,8 +23,10 @@ export const propertyRouterPOST: Router = express.Router();
  *                 type: string
  *               rooms:
  *                 type: number
+ *                 example: 3
  *               surfaceArea:
  *                 type: number
+ *                 example: 70
  *               status:
  *                 type: string
  *                 enum: [ "for sale", "sold", "rented", "for rent" ]
@@ -33,6 +35,7 @@ export const propertyRouterPOST: Router = express.Router();
  *                 enum: [ "house", "apartment", "land" ]
  *               rent:
  *                 type: number
+ *                 example: 2500
  *     responses:
  *       201:
  *         description: Property created successfully
@@ -43,56 +46,61 @@ export const propertyRouterPOST: Router = express.Router();
  */
 propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
 
-        let {
-            address, description, rooms, surfaceArea, status, type, rent, price, pricePerMeter
-        }: Property = req.body;
-    
-        const numericPrice = price ? Number(price.replace(/\D/g, '')) : 0;
-        const numericSurfaceArea = Number(surfaceArea.replace(/\D/g, ''));
-        const numericRent = rent ? Number(rent.replace(/\D/g, '')) : 0;
+    let {
+        address,
+        description,
+        rooms,
+        surfaceArea,
+        status,
+        type,
+        price,
+        rent
+    }: {
+        address: string,
+        description: string,
+        rooms: number,
+        surfaceArea: number,
+        status: PropertyStatus,
+        type: PropertyType,
+        price: number,
+        rent: number
+    } = req.body;
 
-
-    if (!address || !description || typeof rooms !== 'number' || typeof surfaceArea !== 'number' || !status || !type) {
-        res.status(400).send({ error: 'All fields are required and must be valid' });
+    try {
+        if (typeof address !== 'string' || typeof description !== 'string' || typeof rooms !== 'number' || typeof surfaceArea !== 'number' || !status || !type) {
+            throw new Error('All fields are required and must be valid')
+        }
+        if (rooms < 1) {
+            throw new Error('Rooms must be greater than zero')
+        }
+        if (surfaceArea < 1) {
+            throw new Error('Surface area must be greater than zero')
+        }
+        if (price && price < 1) {
+            throw new Error('Price must be greater than zero')
+        }
+        if (rent && rent < 1) {
+            throw new Error('Rent must be greater than zero')
+        }
+        if (!Object.values(PropertyStatus).includes(status as PropertyStatus)) {
+            throw new Error('Invalid status value')
+        }
+        if (!Object.values(PropertyType).includes(type as PropertyType)) {
+            throw new Error('Invalid type value')
+        }
+        if ((!price && !rent) || (price && rent)) {
+            throw new Error('Either price or rent must be provided, but not both')
+        }
+    }
+    catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
 
-    if (rooms < 1) {
-        res.status(400).send({ error: 'Rooms must be a greater than zero' });
-        return;
-    }
-
-    if (numericSurfaceArea < 1) {
-        res.status(400).send({ error: 'Surface area must be greater than zero' });
-        return;
-    }
-
-    if (numericPrice < 1) {
-        res.status(400).send({ error: 'Price must be greater than zero' });
-        return;
-    }
-
-    if (numericRent < 1) {
-        res.status(400).send({ error: 'Rent must be greater than zero' });
-        return;
-    }
-
-    if (!Object.values(PropertyStatus).includes(status as PropertyStatus)) {
-        res.status(400).send({ error: 'Invalid status value' });
-        return;
-    }
-
-    if (!Object.values(PropertyType).includes(type as PropertyType)) {
-        res.status(400).send({ error: 'Invalid type value' });
-        return;
-    }
-
-    if ((!price && !rent) || (price && rent)) {
-        res.status(400).send({ error: 'Either price or rent must be provided, but not both' });
-        return;
-    }
-
-    pricePerMeter = `${(numericPrice / surfaceArea).toFixed(2)} zł/m2`;
+    let surfaceAreaString = `${surfaceArea} m2`;
+    let priceString = price ? `${price} zł` : undefined;
+    let rentString = rent ? `${rent} zł` : undefined;
+    let pricePerMeter = price ? `${(price / surfaceArea).toFixed(2)} zł/m2` : undefined;
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
@@ -105,8 +113,8 @@ propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
         try {
             properties = JSON.parse(data);
         } catch (parseError) {
-            console.error('Error parsing clients data:', parseError);
-            res.status(500).send({ error: 'Error parsing clients data' });
+            console.error('Error parsing properties data:', parseError);
+            res.status(500).send({ error: 'Error parsing properties data' });
             return;
         }
 
@@ -118,12 +126,12 @@ propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
             address,
             description,
             rooms,
-            surfaceArea,
+            surfaceArea: surfaceAreaString,
             status,
             type,
-            rent,
-            price,
-            pricePerMeter
+            ...(priceString && { price: priceString }),
+            ...(rentString && { rent: rentString }),
+            ...(pricePerMeter && { pricePerMeter })
         };
 
         properties.push(newProperty);

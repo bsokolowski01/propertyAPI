@@ -1,11 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
-import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cors, { CorsOptions } from 'cors';
-import { Client } from './interfaces/clientInterface';
-import { Property } from './interfaces/propertyInterface';
-import { clientGenerator, propertyGenerator } from './generator';
 import {
     clientIdRouter,
     clientRouterPOST,
@@ -13,23 +9,23 @@ import {
     clientIdRouterDEL,
     clientRouterPATCH,
     clientByIdRouterPUT
-  } from './routes/clientRouteImport';
-import { 
+} from './routes/clientRouteImport';
+import {
     propertiesRouter,
     propertyIdRouter,
     propertyIdRouterDEL,
     propertyRouterPUT,
     propertyRouterPOST,
     propertyByIdRouterPATCH
- } from './routes/propertyRouteImport';
-import { 
+} from './routes/propertyRouteImport';
+import {
     reservationsRouter,
     reservationRouterPOST,
     reservationByIdRouter,
     reservationByIdRouterPATCH,
     reservationByIdRouterDEL,
     reservationByIdRouterPUT
- } from './routes/reservationRouteImport';
+} from './routes/reservationRouteImport';
 
 const app = express();
 
@@ -43,17 +39,6 @@ const corsOptions: CorsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-const clientData: Client[] = [];
-const propertyData: Property[] = [];
-
-for (let id = 1; id <= 10; id++) {
-    clientData.push(clientGenerator(id));
-    propertyData.push(propertyGenerator(id));
-}
-
-fs.writeFileSync('./data/client.json', JSON.stringify(clientData, null, 2));
-fs.writeFileSync('./data/property.json', JSON.stringify(propertyData, null, 2));
 
 // Swagger setup
 const swaggerOptions = {
@@ -70,7 +55,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['routes/**/*.js', 'routes/**/*.ts'],
+    apis: ['restAPI/routes/**/*.js', 'restAPI/routes/**/*.ts'],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
@@ -81,6 +66,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Content-Security-Policy', "script-src 'self' 'unsafe-eval'");
     next();
 });
 

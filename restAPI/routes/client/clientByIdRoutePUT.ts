@@ -1,23 +1,23 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
+import { Client } from '../../../interfaces/clientInterface'
 
-import { Client } from '../../interfaces/clientInterface';
-
-export const clientRouterPATCH: Router = express.Router();
+export const clientByIdRouterPUT: Router = express.Router();
 
 /**
  * @swagger
  * /clients/{id}:
- *   patch:
- *     summary: Update client's email by ID
+ *   put:
+ *     summary: Update client data by ID
  *     tags: [Client]
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
+ *         required: true
+ *         description: The client ID
  *     requestBody:
  *       required: true
  *       content:
@@ -25,26 +25,50 @@ export const clientRouterPATCH: Router = express.Router();
  *           schema:
  *             type: object
  *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
  *               email:
  *                 type: string
+ *                 example: john.doe@example.com
+ *               phone:
+ *                 type: string
+ *                 example: +48123456789
+ *               address:
+ *                 type: string
+ *                 example: 123 Main St
  *     responses:
  *       200:
- *         description: Client email updated successfully
+ *         description: Client data updated successfully
  *       400:
  *         description: Invalid input
  *       404:
  *         description: Client not found
  *       500:
- *         description: Error updating client email
+ *         description: Error updating client data
  */
-clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
+
+clientByIdRouterPUT.put('/clients/:id', (req: Request, res: Response): void => {
     const clientId = parseInt(req.params.id, 10);
-    const { email }: Client = req.body;
+    const { name, email, phone, address }: Client = req.body;
 
     try {
-        if (!email || !validator.isEmail(email)) {
+        if (!validator.isLength(name, { min: 1 }) || !validator.isAlpha(name.replace(/\s/g, ''))) {
+            throw new Error('Invalid name');
+        }
+
+        if (!validator.isEmail(email)) {
             throw new Error('Invalid email address');
         }
+
+        if (!validator.isMobilePhone(phone)) {
+            throw new Error('Invalid phone number');
+        }
+
+        if (!validator.isLength(address, { min: 1 })) {
+            throw new Error('Invalid address');
+        }
+
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });
         return;
@@ -53,8 +77,7 @@ clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
     fs.readFile('data/client.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading clients file:', err);
-            res.status(500).json({ error: 'Error reading clients data' });
-            return;
+            return res.status(500).json({ error: 'Error reading clients data' });
         }
 
         let clients: Client[];
@@ -69,21 +92,19 @@ clientRouterPATCH.patch('/clients/:id', (req: Request, res: Response): void => {
         const clientIndex = clients.findIndex((c: Client) => c.id === clientId);
 
         if (clientIndex === -1) {
-            res.status(404).json({ error: 'Client not found' });
-            return;
+            return res.status(404).json({ error: 'Client not found' });
         }
 
-        clients[clientIndex].email = email;
+        clients[clientIndex] = { ...clients[clientIndex], name, email, phone, address };
 
         fs.writeFile('data/client.json', JSON.stringify(clients, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing clients data:', writeError);
-                res.status(500).json({ error: 'Error updating client email' });
-                return;
+                return res.status(500).json({ error: 'Error updating client data' });
             }
 
             res.status(200).json({
-                message: 'Client email updated successfully',
+                message: 'Client data updated successfully',
                 _links: {
                     self: {
                         href: `${req.protocol}://${req.get('host')}${req.originalUrl}`

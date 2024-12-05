@@ -1,42 +1,43 @@
 import express, { Request, Response, Router } from 'express';
-import fs from 'fs';
+import fs from "fs";
+import { Reservation } from "../../../interfaces/reservationInterface";
 
-import { Reservation } from '../../interfaces/reservationInterface';
-
-export const reservationByIdRouterDEL: Router = express.Router();
+export const reservationByIdRouterPATCH: Router = express.Router();
 
 /**
  * @swagger
  * /reservations/{id}:
- *   delete:
- *     summary: Delete a reservation by ID
+ *   patch:
+ *     summary: Extend reservation by ID
  *     tags: [Reservation]
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: days
  *         required: true
- *         description: The reservation ID
+ *         schema:
+ *           type: integer
+ *           description: Number of days to extend the reservation
  *     responses:
  *       200:
- *         description: Reservation deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Reservation deleted successfully
+ *         description: Reservation extended successfully
+ *       400:
+ *         description: Invalid number of days
  *       404:
  *         description: Reservation not found
- *       500:
- *         description: Error deleting reservation
  */
-
-reservationByIdRouterDEL.delete('/reservations/:id', (req: Request, res: Response): void => {
+reservationByIdRouterPATCH.patch('/reservations/:id', (req: Request, res: Response): void => {
     const reservationId = parseInt(req.params.id, 10);
+    const days = parseInt(req.query.days as string, 10);
+
+    if (isNaN(days) || days <= 0) {
+        res.status(400).send({ error: 'Invalid number of days' });
+        return;
+    }
 
     fs.readFile('data/reservation.json', 'utf8', (err, data) => {
         if (err) {
@@ -61,17 +62,20 @@ reservationByIdRouterDEL.delete('/reservations/:id', (req: Request, res: Respons
             return;
         }
 
-        reservations.splice(reservationIndex, 1);
+        const reservation = reservations[reservationIndex];
+        const endDate = new Date(reservation.date.end);
+        endDate.setDate(endDate.getDate() + days);
 
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {
                 console.error('Error writing reservations data:', writeError);
-                res.status(500).send({ error: 'Error deleting reservation' });
+                res.status(500).send({ error: 'Error updating reservation' });
                 return;
             }
 
             res.status(200).send({
-                message: 'Reservation deleted successfully',
+                message: 'Reservation extended successfully',
+                ...reservation,
                 _links: {
                     self: {
                         href: `${req.protocol}://${req.get('host')}${req.originalUrl}`

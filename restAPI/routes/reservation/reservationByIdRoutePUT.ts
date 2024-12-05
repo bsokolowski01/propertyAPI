@@ -1,7 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-
-import { Reservation } from '../../interfaces/reservationInterface';
+import { Reservation } from '../../../interfaces/reservationInterface';
 
 export const reservationByIdRouterPUT: Router = express.Router();
 
@@ -69,7 +68,7 @@ reservationByIdRouterPUT.put('/reservations/:id', (req: Request, res: Response):
         res.status(400).send({ error: 'Invalid date' });
         return;
     }
-    if (isNaN(Date.parse(date.start)) || isNaN(Date.parse(date.end))) {
+    if (isNaN(Date.parse(date.start.toString())) || isNaN(Date.parse(date.end.toString()))) {
         res.status(400).send({ error: 'Invalid date format' });
         return;
     }
