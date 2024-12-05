@@ -65,6 +65,7 @@ reservationByIdRouterPATCH.patch('/reservations/:id', (req: Request, res: Respon
         const reservation = reservations[reservationIndex];
         const endDate = new Date(reservation.date.end);
         endDate.setDate(endDate.getDate() + days);
+        reservation.date.end = endDate;
 
         fs.writeFile('data/reservation.json', JSON.stringify(reservations, null, 2), (writeError) => {
             if (writeError) {

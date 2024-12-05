@@ -1,6 +1,8 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import { Reservation } from '../../../interfaces/reservationInterface';
+import { Property } from '../../../interfaces/propertyInterface';
+import { Client } from '../../../interfaces/clientInterface';
 
 export const reservationByIdRouterPUT: Router = express.Router();
 
@@ -56,20 +58,22 @@ reservationByIdRouterPUT.put('/reservations/:id', (req: Request, res: Response):
     const reservationId = parseInt(req.params.id, 10);
     const { propertyId, clientId, date }: Reservation = req.body;
 
-    if (typeof propertyId !== 'number' || propertyId <= 0) {
-        res.status(400).send({ error: 'Invalid propertyId' });
-        return;
+    try {
+        if (typeof propertyId !== 'number' || propertyId <= 0) {
+            throw new Error('Invalid propertyId');
+        }
+        if (typeof clientId !== 'number' || clientId <= 0) {
+            throw new Error('Invalid clientId');
+        }
+        if (!date || typeof date !== 'object' || !date.start || !date.end) {
+            throw new Error('Invalid date');
+        }
+        if (isNaN(Date.parse(date.start.toString())) || isNaN(Date.parse(date.end.toString()))) {
+            throw new Error('Invalid date format');
+        }
     }
-    if (typeof clientId !== 'number' || clientId <= 0) {
-        res.status(400).send({ error: 'Invalid clientId' });
-        return;
-    }
-    if (!date || typeof date !== 'object' || !date.start || !date.end) {
-        res.status(400).send({ error: 'Invalid date' });
-        return;
-    }
-    if (isNaN(Date.parse(date.start.toString())) || isNaN(Date.parse(date.end.toString()))) {
-        res.status(400).send({ error: 'Invalid date format' });
+    catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
 
@@ -93,7 +97,7 @@ reservationByIdRouterPUT.put('/reservations/:id', (req: Request, res: Response):
 
         if (reservationIndex === -1) {
             res.status(404).send({ error: 'Reservation not found' });
-            return; 
+            return;
         }
 
         reservations[reservationIndex] = { ...reservations[reservationIndex], propertyId, clientId, date };
