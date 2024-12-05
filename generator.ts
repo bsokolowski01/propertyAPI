@@ -58,6 +58,8 @@ const propertyGenerator = (id: number): Property => {
 };
 
 const reservationGenerator = (id: number): Reservation => {
+    faker.seed(id);
+    
     const startDate: Date = faker.date.between({ from: '2024-01-01', to: '2025-01-01' });
     const endDate = new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
 
