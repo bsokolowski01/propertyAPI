@@ -1,9 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
+import { Property, PropertyStatus, PropertyType } from '../../interfaces/propertyInterface';
 
-import { Property } from '../../interfaces/propertyInterface';
-
-export const propertyRouterPOST = express.Router();
+export const propertyRouterPOST: Router = express.Router();
 
 /**
  * @swagger
@@ -44,10 +43,14 @@ export const propertyRouterPOST = express.Router();
  */
 propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
 
-    const { address, description, rooms, surfaceArea, status, type, rent, price } = req.body;
+        let {
+            address, description, rooms, surfaceArea, status, type, rent, price, pricePerMeter
+        }: Property = req.body;
+    
+        const numericPrice = price ? Number(price.replace(/\D/g, '')) : 0;
+        const numericSurfaceArea = Number(surfaceArea.replace(/\D/g, ''));
+        const numericRent = rent ? Number(rent.replace(/\D/g, '')) : 0;
 
-    const validStatuses = ["for rent", "sold", "rented", "for sale"];
-    const validTypes = ["house", "apartment", "land"];
 
     if (!address || !description || typeof rooms !== 'number' || typeof surfaceArea !== 'number' || !status || !type) {
         res.status(400).send({ error: 'All fields are required and must be valid' });
@@ -59,17 +62,27 @@ propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
         return;
     }
 
-    if (surfaceArea < 1) {
+    if (numericSurfaceArea < 1) {
         res.status(400).send({ error: 'Surface area must be greater than zero' });
         return;
     }
 
-    if (!validStatuses.includes(status)) {
+    if (numericPrice < 1) {
+        res.status(400).send({ error: 'Price must be greater than zero' });
+        return;
+    }
+
+    if (numericRent < 1) {
+        res.status(400).send({ error: 'Rent must be greater than zero' });
+        return;
+    }
+
+    if (!Object.values(PropertyStatus).includes(status as PropertyStatus)) {
         res.status(400).send({ error: 'Invalid status value' });
         return;
     }
 
-    if (!validTypes.includes(type)) {
+    if (!Object.values(PropertyType).includes(type as PropertyType)) {
         res.status(400).send({ error: 'Invalid type value' });
         return;
     }
@@ -79,10 +92,7 @@ propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
         return;
     }
 
-    const surfaceAreaStr = `${surfaceArea} m2`;
-    const priceStr = price ? `${price} zł` : undefined;
-    const rentStr = rent ? `${rent} zł` : undefined;
-    const pricePerMeter = price ? `${(price / surfaceArea).toFixed(2)} zł/m2` : undefined;
+    pricePerMeter = `${(numericPrice / surfaceArea).toFixed(2)} zł/m2`;
 
     fs.readFile('data/property.json', 'utf8', (err, data) => {
         if (err) {
@@ -108,11 +118,11 @@ propertyRouterPOST.post('/properties', (req: Request, res: Response): void => {
             address,
             description,
             rooms,
-            surfaceArea: surfaceAreaStr,
+            surfaceArea,
             status,
             type,
-            rent: rentStr,
-            price: priceStr,
+            rent,
+            price,
             pricePerMeter
         };
 

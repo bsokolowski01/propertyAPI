@@ -1,71 +1,71 @@
 [
   {
     "id": 1,
-    "address": "11335 Pfannerstill Estate",
+    "address": "23354 Derby Road",
     "description": "Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.",
     "rooms": 3,
     "surfaceArea": "86 m2",
     "status": "for rent",
-    "type": "land",
-    "rent": "4300 zł"
+    "type": "apartment",
+    "rent": "4200 zł"
   },
   {
     "id": 2,
-    "address": "3262 Lilliana Meadows",
-    "description": "Doloribus audacia territo ultra.",
+    "address": "26226 Collier Manor",
+    "description": "Territo ultra depulso tyrannus.",
     "rooms": 3,
     "surfaceArea": "51 m2",
     "status": "for rent",
     "type": "house",
-    "rent": "4200 zł"
+    "rent": "2200 zł"
   },
   {
     "id": 3,
-    "address": "912 Ike Brooks",
-    "description": "Sodalitas cibo spes officiis acervus laboriosam.",
+    "address": "220 Bartell Land",
+    "description": "Cibo spes officiis acervus laboriosam caute cuppedia ciminatio.",
     "rooms": 3,
     "surfaceArea": "86 m2",
     "status": "sold",
-    "type": "apartment",
+    "type": "land",
     "price": "716300 zł",
     "pricePerMeter": "8329.07 zł/m2"
   },
   {
     "id": 4,
-    "address": "290 Howard Shoals",
-    "description": "Urbanus vorago ascit patria.",
+    "address": "90247 Sally Way",
+    "description": "Patria absorbeo crepusculum adinventitias.",
     "rooms": 5,
     "surfaceArea": "77 m2",
     "status": "sold",
-    "type": "apartment",
+    "type": "land",
     "price": "989100 zł",
     "pricePerMeter": "12845.45 zł/m2"
   },
   {
     "id": 5,
-    "address": "6752 Armand River",
-    "description": "Articulus utrum certus cupio clementia quo.",
+    "address": "7521 Myrtice Knolls",
+    "description": "Utrum certus cupio clementia.",
     "rooms": 2,
     "surfaceArea": "46 m2",
     "status": "rented",
     "type": "house",
-    "rent": "3500 zł"
+    "rent": "3600 zł"
   },
   {
     "id": 6,
-    "address": "65436 Rippin Manors",
+    "address": "5436 Rippin Manors",
     "description": "Similique vulariter tracto cupiditate utor trans adopto.",
     "rooms": 5,
     "surfaceArea": "66 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "apartment",
     "price": "928500 zł",
     "pricePerMeter": "14068.18 zł/m2"
   },
   {
     "id": 7,
-    "address": "550 Jett Port",
-    "description": "Creator aedificium civis verbera benigne defero vicinus acidus pauci.",
+    "address": "5024 The Glebe",
+    "description": "Aedificium civis verbera benigne defero vicinus.",
     "rooms": 1,
     "surfaceArea": "44 m2",
     "status": "sold",
@@ -75,8 +75,8 @@
   },
   {
     "id": 8,
-    "address": "14454 Little Rue",
-    "description": "Quam cursim civitas voluptate concido blanditiis aedificium vomito.",
+    "address": "44545 Rowe Rapid",
+    "description": "Cursim civitas voluptate concido blanditiis aedificium vomito.",
     "rooms": 5,
     "surfaceArea": "99 m2",
     "status": "sold",
@@ -86,23 +86,23 @@
   },
   {
     "id": 9,
-    "address": "24203 Shakira Villages",
+    "address": "42031 Wellington Street",
     "description": "Subnecto nam velociter.",
     "rooms": 1,
     "surfaceArea": "35 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "apartment",
     "price": "348700 zł",
     "pricePerMeter": "9962.86 zł/m2"
   },
   {
     "id": 10,
-    "address": "3171 Marley Villages",
-    "description": "Doloremque tonsor perspiciatis.",
+    "address": "27106 12th Street",
+    "description": "Tonsor perspiciatis suppono claro vero summopere illo.",
     "rooms": 4,
     "surfaceArea": "51 m2",
     "status": "sold",
-    "type": "land",
+    "type": "house",
     "price": "853500 zł",
     "pricePerMeter": "16735.29 zł/m2"
   }

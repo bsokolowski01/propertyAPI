@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 
 import { Reservation } from '../../interfaces/reservationInterface';
 
-export const reservationByIdRouterPUT = express.Router();
+export const reservationByIdRouterPUT: Router = express.Router();
 
 /**
  * @swagger
@@ -57,7 +57,6 @@ reservationByIdRouterPUT.put('/reservations/:id', (req: Request, res: Response):
     const reservationId = parseInt(req.params.id, 10);
     const { propertyId, clientId, date }: Reservation = req.body;
 
-    // Walidacja pól
     if (typeof propertyId !== 'number' || propertyId <= 0) {
         res.status(400).send({ error: 'Invalid propertyId' });
         return;

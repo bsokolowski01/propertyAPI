@@ -1,37 +1,41 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import cors from 'cors';
-
+import cors, { CorsOptions } from 'cors';
+import { Client } from './interfaces/clientInterface';
+import { Property } from './interfaces/propertyInterface';
 import { clientGenerator, propertyGenerator } from './generator';
-
-import { clientIdRouter } from './routes/client/clientByIdRoute';
-import { clientRouterPOST } from './routes/client/clientRoutePOST';
-import { clientsRouter } from './routes/client/clientsRoute';
-import { clientIdRouterDEL } from './routes/client/clientByIdRouteDEL';
-import { clientRouterPATCH } from './routes/client/clientByIdRoutePATCH';
-import { clientByIdRouterPUT } from './routes/client/clientByIdRoutePUT';
-
-import { propertiesRouter } from './routes/property/propertiesRoute';
-import { propertyIdRouter } from './routes/property/propertyByIdRoute';
-import { propertyIdRouterDEL } from './routes/property/propertyByIdRouteDEL';
-import { propertyRouterPUT } from './routes/property/propertyRoutePUT';
-import { propertyRouterPOST } from './routes/property/propertyRoutePOST';
-import { propertyByIdRouterPATCH } from './routes/property/propertyByIdRoutePATCH';
-
-import { reservationsRouter } from './routes/reservation/reservationsRoute';
-import { reservationRouterPOST } from './routes/reservation/reservationRoutePOST';
-import { reservationByIdRouter } from './routes/reservation/reservationByIdRoute';
-import { reservationByIdRouterPATCH } from './routes/reservation/reservationByIdRoutePATCH';
-import { reservationByIdRouterDEL } from './routes/reservation/reservationByIdRouteDEL';
-import { reservationByIdRouterPUT } from './routes/reservation/reservationByIdRoutePUT';
+import {
+    clientIdRouter,
+    clientRouterPOST,
+    clientsRouter,
+    clientIdRouterDEL,
+    clientRouterPATCH,
+    clientByIdRouterPUT
+  } from './routes/clientRouteImport';
+import { 
+    propertiesRouter,
+    propertyIdRouter,
+    propertyIdRouterDEL,
+    propertyRouterPUT,
+    propertyRouterPOST,
+    propertyByIdRouterPATCH
+ } from './routes/propertyRouteImport';
+import { 
+    reservationsRouter,
+    reservationRouterPOST,
+    reservationByIdRouter,
+    reservationByIdRouterPATCH,
+    reservationByIdRouterDEL,
+    reservationByIdRouterPUT
+ } from './routes/reservationRouteImport';
 
 const app = express();
 
 app.use(express.json());
 
-const corsOptions: cors.CorsOptions = {
+const corsOptions: CorsOptions = {
     origin: 'http://localhost:8989',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'X-Content-Type-Options', 'Cache-Control'],
@@ -40,8 +44,8 @@ const corsOptions: cors.CorsOptions = {
 
 app.use(cors(corsOptions));
 
-const clientData: Array<Record<string, any>> = [];
-const propertyData: Array<Record<string, any>> = [];
+const clientData: Client[] = [];
+const propertyData: Property[] = [];
 
 for (let id = 1; id <= 10; id++) {
     clientData.push(clientGenerator(id));
@@ -73,7 +77,7 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware to set headers for all responses
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-cache');

@@ -1,11 +1,11 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 
 import { Reservation } from '../../interfaces/reservationInterface';
 import { Property } from '../../interfaces/propertyInterface';
 import { Client } from '../../interfaces/clientInterface';
 
-export const reservationRouterPOST = express.Router();
+export const reservationRouterPOST: Router = express.Router();
 
 /**
  * @swagger
@@ -38,7 +38,7 @@ export const reservationRouterPOST = express.Router();
  */
 
 reservationRouterPOST.post('/reservations', (req: Request, res: Response): void => {
-    const { propertyId, clientId }: { propertyId: Property, clientId: Reservation } = req.body;
+    const { propertyId, clientId }: Reservation = req.body;
 
     if (typeof propertyId !== 'number' || typeof clientId !== 'number') {
         res.status(400).send({ error: 'Invalid input' });

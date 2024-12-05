@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from "fs";
 
 import { Reservation } from "../../interfaces/reservationInterface";
 
-export const reservationByIdRouterPATCH = express.Router();
+export const reservationByIdRouterPATCH: Router = express.Router();
 
 /**
  * @swagger
@@ -31,7 +31,7 @@ export const reservationByIdRouterPATCH = express.Router();
  *       404:
  *         description: Reservation not found
  */
-reservationByIdRouterPATCH.patch('/reservations/:id', (req, res): void => {
+reservationByIdRouterPATCH.patch('/reservations/:id', (req: Request, res: Response): void => {
     const reservationId = parseInt(req.params.id, 10);
     const days = parseInt(req.query.days as string, 10);
 
