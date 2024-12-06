@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 
-const packageDefinition = protoLoader.loadSync('./proto/property.proto');
+const packageDefinition = protoLoader.loadSync('./grpc/proto/property.proto');
 const proto = grpc.loadPackageDefinition(packageDefinition);
 
 const client = new proto.propertyAPI.PropertyService('127.0.0.1:9292', grpc.credentials.createInsecure());

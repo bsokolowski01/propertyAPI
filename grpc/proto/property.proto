@@ -2,17 +2,22 @@ syntax = "proto3";
 
 package propertyAPI;
 
-service PropertyService {
-  rpc GetClient (ClientRequest) returns (ClientResponse);
-  rpc GetProperty (PropertyRequest) returns (PropertyResponse);
-  rpc GetReservation (ReservationRequest) returns (ReservationResponse);
+message VoidParam {}
+
+// Clients
+service ClientService {
+  rpc ReadClient (ClientId) returns (Client);
+  rpc ReadClients (VoidParam) returns (Clients);
+  rpc CreateClient (ClientResponse) returns (Client);
+  rpc UpdateClient (ClientResponse) returns (Client);
+  rpc DeleteClient (ClientId) returns (DeleteClientResponse);
 }
 
-message ClientRequest {
+message ClientId {
   int32 clientId = 1;
 }
 
-message ClientResponse {
+message Client {
   int32 clientId = 1;
   string name = 2;
   string email = 3;
@@ -20,6 +25,15 @@ message ClientResponse {
   string address = 5;
 }
 
+message Clients {
+  repeated Client clients = 1;
+}
+
+message DeleteProduckResponse {
+  bool deleted = 1;
+}
+
+// Property
 message PropertyRequest {
   int32 propertyId = 1;
 }
