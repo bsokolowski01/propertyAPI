@@ -1,91 +1,34 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import fs from 'fs';
+import { clientService } from './services/clientService.js';
+import { propertyService } from './services/propertyService.js';
+import { reservationService } from './services/reservationService.js';
 
-const packageDefinition = protoLoader.loadSync('grpc/proto/property.proto');
-const proto = grpc.loadPackageDefinition(packageDefinition);
+const packageDefinition = protoLoader.loadSync('grpc/proto/property.proto', {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+});
 
-const clientsFilePath = './data/client.json';
-const propertiesFilePath = './data/property.json';
-const reservationsFilePath = './data/reservation.json';
-
-const readJSONFile = (filePath) => {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-};
+const proto = grpc.loadPackageDefinition(packageDefinition).propertyAPI;
 
 const server = new grpc.Server();
 
-const clients = readJSONFile(clientsFilePath);
+// Client
+server.addService(proto.ClientService.service, clientService);
 
-server.addService(proto.propertyAPI.ClientService.service, {
-  readClient: (call, callback) => {
-    const client = clients.find((client) => client.id === call.request.clientId);
-    if (client) {
-      callback(null, client);
-    } else {
-      callback({
-        code: grpc.status.NOT_FOUND,
-        details: "Client not found"
-      });
-    }
-  },
-  readClients: (call, callback) => {
-    return callback(null, { clients });
-  },
-  createClient: (call, callback) => {
-    const data = call.request;
+// Property
+server.addService(proto.PropertyService.service, propertyService);
 
-    const newClientData = { ...data, id: clients.length + 1 };
+// Reservation
+server.addService(proto.ReservationService.service, reservationService);
 
-    products.push(newClientData);
-
-    return callback(null, newClientData)
-  },
-  updateClient: (call, callback) => {
-    const clientInfo = call.request;
-
-    const clientIndex = clients.findIndex(c => c.id === clientInfo.id);
-
-    if (!clientIndex) {
-      return callback({
-        code: grpc.status.NOT_FOUND,
-        details: "Could not find a client to update"
-      });
-    }
-
-    const selectedClient = clients[clientIndex];
-
-    const updatedClient = {
-      id: selectedClient.id,
-      name: clientInfo.name ?? selectedClient.name,
-      email: clientInfo.email ?? selectedClient.email,
-      phone: clientInfo.phone ?? selectedClient.phone,
-      address: clientInfo.address ?? selectedClient.address,
-    }
-
-    clients.splice(clientIndex, 1, updatedClient);
-
-    return callback(null, updatedClient);
-  },
-  deleteClient: (call, callback) => {
-    const clientId = call.request.id;
-    const clientIndex = clients.findIndex(c => c.id === clientId);
-    if(!clientIndex){
-      return callback({
-        code: grpc.status.NOT_FOUND,
-        details: "Could not find a client with the specified ID to delete"
-      });
-    }
-  
-    clients.splice(clientIndex, 1);
-  
-    return callback(null, { deleted: true });
-  }
-})
-
-server.bindAsync("127.0.0.1:9292", grpc.ServerCredentials.createInsecure(), (err, port) => {
+server.bindAsync("127.0.0.1:9191", grpc.ServerCredentials.createInsecure(), (err, port) => {
   if (err) {
     console.error(err);
   }
   console.log(`Server (gRPC) started on port ${port}`);
 });
+

@@ -4,9 +4,11 @@ import * as protoLoader from '@grpc/proto-loader';
 const packageDefinition = protoLoader.loadSync('./grpc/proto/property.proto');
 const proto = grpc.loadPackageDefinition(packageDefinition);
 
-const client = new proto.propertyAPI.PropertyService('127.0.0.1:9292', grpc.credentials.createInsecure());
+const client = new proto.propertyAPI.ClientService('127.0.0.1:9191', grpc.credentials.createInsecure());
+const property = new proto.propertyAPI.PropertyService('127.0.0.1:9191', grpc.credentials.createInsecure());
+const reservation = new proto.propertyAPI.ReservationService('127.0.0.1:9191', grpc.credentials.createInsecure());
 
-client.GetClient({ clientId: 1 }, (error, response) => {
+client.ReadClient({ id: 1 }, (error, response) => {
   if (error) {
     console.error(error);
     return;
@@ -14,7 +16,7 @@ client.GetClient({ clientId: 1 }, (error, response) => {
   console.log('Client:', response);
 });
 
-client.GetProperty({ propertyId: 1 }, (error, response) => {
+property.ReadProperty({ id: 1 }, (error, response) => {
   if (error) {
     console.error(error);
     return;
@@ -22,7 +24,7 @@ client.GetProperty({ propertyId: 1 }, (error, response) => {
   console.log('Property:', response);
 });
 
-client.GetReservation({ reservationId: 1 }, (error, response) => {
+reservation.ReadReservation({ id: 1 }, (error, response) => {
   if (error) {
     console.error(error);
     return;

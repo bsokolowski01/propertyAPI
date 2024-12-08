@@ -8,17 +8,17 @@ message VoidParam {}
 service ClientService {
   rpc ReadClient (ClientId) returns (Client);
   rpc ReadClients (VoidParam) returns (Clients);
-  rpc CreateClient (ClientResponse) returns (Client);
-  rpc UpdateClient (ClientResponse) returns (Client);
-  rpc DeleteClient (ClientId) returns (DeleteClientResponse);
+  rpc CreateClient (Client) returns (Client);
+  rpc UpdateClient (Client) returns (Client);
+  rpc DeleteClient (ClientId) returns (DeleteClient);
 }
 
 message ClientId {
-  int32 clientId = 1;
+  int32 id = 1;
 }
 
 message Client {
-  int32 clientId = 1;
+  int32 id = 1;
   string name = 2;
   string email = 3;
   string phone = 4;
@@ -29,34 +29,59 @@ message Clients {
   repeated Client clients = 1;
 }
 
-message DeleteProduckResponse {
+message DeleteClient {
   bool deleted = 1;
 }
 
 // Property
-message PropertyRequest {
-  int32 propertyId = 1;
+service PropertyService {
+  rpc ReadProperty (PropertyId) returns (Property);
+  rpc ReadProperties (VoidParam) returns (Properties);
+  rpc CreateProperty (Property) returns (Property);
+  rpc UpdateProperty (Property) returns (Property);
+  rpc DeleteProperty (PropertyId) returns (DeleteProperty);
 }
 
-message PropertyResponse {
-  int32 propertyId = 1;
+message PropertyId {
+  int32 id = 1;
+}
+
+message Property {
+  int32 id = 1;
   string address = 2;
   string description = 3;
   int32 rooms = 4;
   string surfaceArea = 5;
   string status = 6;
   string type = 7;
-  string rent = 8;
-  string price = 9;
-  string pricePerMeter = 10;
+  optional string rent = 8;
+  optional string price = 9;
+  optional string pricePerMeter = 10;
 }
 
-message ReservationRequest {
-  int32 reservationId = 1;
+message Properties {
+  repeated Property properties = 1;
 }
 
-message ReservationResponse {
-  int32 reservationId = 1;
+message DeleteProperty {
+  bool deleted = 1;
+}
+
+// Reservation
+service ReservationService {
+  rpc ReadReservation (ReservationId) returns (Reservation);
+  rpc ReadReservations (VoidParam) returns (Reservations);
+  rpc CreateReservation (Reservation) returns (Reservation);
+  rpc UpdateReservation (Reservation) returns (Reservation);
+  rpc DeleteReservation (ReservationId) returns (DeleteReservation);
+}
+
+message ReservationId {
+  int32 id = 1;
+}
+
+message Reservation {
+  int32 id = 1;
   int32 propertyId = 2;
   int32 clientId = 3;
   ReservationDate date = 4;
@@ -65,4 +90,12 @@ message ReservationResponse {
 message ReservationDate {
   string start = 1;
   string end = 2;
+}
+
+message Reservations {
+  repeated Reservation reservations = 1;
+}
+
+message DeleteReservation {
+  bool deleted = 1;
 }
