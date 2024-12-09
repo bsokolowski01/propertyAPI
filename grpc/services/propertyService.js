@@ -1,5 +1,6 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
+import { filter, paginate, sort } from './filters.js';
 
 const propertiesFilePath = 'data/property.json';
 const properties = JSON.parse(fs.readFileSync(propertiesFilePath, 'utf8'));
@@ -22,7 +23,18 @@ const propertyService = {
     }
   },
   readProperties: (call, callback) => {
-    return callback(null, { properties });
+    let result = [...properties];
+    
+    if (call.request.filters) {
+      result = filter(result, call.request.filters);
+    }
+    if (call.request.sorts) {
+      result = sort(result, call.request.sorts);
+    }
+    if (call.request.pagination) {
+      result = paginate(result, call.request.pagination);
+    }
+    return callback(null, { properties: result });
   },
   createProperty: (call, callback) => {
     const data = call.request;

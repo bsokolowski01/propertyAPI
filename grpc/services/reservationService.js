@@ -1,5 +1,6 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
+import { filter, paginate, sort } from './filters.js';
 
 const reservationsFilePath = 'data/reservation.json';
 const reservations = JSON.parse(fs.readFileSync(reservationsFilePath, 'utf8'));
@@ -22,7 +23,18 @@ const reservationService = {
     }
   },
   readReservations: (call, callback) => {
-    return callback(null, { reservations });
+    let result = [...reservations];
+    
+    if (call.request.filters) {
+      result = filter(result, call.request.filters);
+    }
+    if (call.request.sorts) {
+      result = sort(result, call.request.sorts);
+    }
+    if (call.request.pagination) {
+      result = paginate(result, call.request.pagination);
+    }
+    return callback(null, { reservations: result });
   },
   createReservation: (call, callback) => {
     const data = call.request;

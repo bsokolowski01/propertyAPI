@@ -1,5 +1,6 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
+import { filter, paginate, sort } from './filters.js';
 
 const clientsFilePath = 'data/client.json';
 const clients = JSON.parse(fs.readFileSync(clientsFilePath, 'utf8'));
@@ -21,8 +22,20 @@ const clientService = {
       });
     }
   },
-  readClients: (call, callback) => {
-    return callback(null, { clients });
+  readClients: (call, callback) => {   
+    let result = [...clients];
+    
+    if (call.request.filters) {
+      result = filter(result, call.request.filters);
+    }
+    if (call.request.sorts) {
+      result = sort(result, call.request.sorts);
+    }
+    if (call.request.pagination) {
+      result = paginate(result, call.request.pagination);
+    }
+
+    return callback(null, { clients: result });
   },
   createClient: (call, callback) => {
     const data = call.request;

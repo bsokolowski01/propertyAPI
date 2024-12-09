@@ -2,12 +2,31 @@ syntax = "proto3";
 
 package propertyAPI;
 
-message VoidParam {}
+message Filter { 
+  string field = 1;
+  string value = 2;
+}
+
+message Sort {
+  string field = 1;
+  bool ascending = 2;
+}
+
+message Pagination {
+  int32 page = 1;
+  int32 pageSize = 2;
+}
+
+message Query {
+  repeated Filter filters = 1;
+  repeated Sort sorts = 2;
+  Pagination pagination = 3;
+}
 
 // Clients
 service ClientService {
   rpc ReadClient (ClientId) returns (Client);
-  rpc ReadClients (VoidParam) returns (Clients);
+  rpc ReadClients (Query) returns (Clients);
   rpc CreateClient (Client) returns (Client);
   rpc UpdateClient (Client) returns (Client);
   rpc DeleteClient (ClientId) returns (DeleteClient);
@@ -36,7 +55,7 @@ message DeleteClient {
 // Property
 service PropertyService {
   rpc ReadProperty (PropertyId) returns (Property);
-  rpc ReadProperties (VoidParam) returns (Properties);
+  rpc ReadProperties (Query) returns (Properties);
   rpc CreateProperty (Property) returns (Property);
   rpc UpdateProperty (Property) returns (Property);
   rpc DeleteProperty (PropertyId) returns (DeleteProperty);
@@ -70,7 +89,7 @@ message DeleteProperty {
 // Reservation
 service ReservationService {
   rpc ReadReservation (ReservationId) returns (Reservation);
-  rpc ReadReservations (VoidParam) returns (Reservations);
+  rpc ReadReservations (Query) returns (Reservations);
   rpc CreateReservation (Reservation) returns (Reservation);
   rpc UpdateReservation (Reservation) returns (Reservation);
   rpc DeleteReservation (ReservationId) returns (DeleteReservation);
