@@ -4,7 +4,10 @@ package propertyAPI;
 
 message Filter { 
   string field = 1;
-  string value = 2;
+  string eq =  2;
+  string neq = 3;
+  string contains = 4;
+  string notContains = 5;
 }
 
 message Sort {
