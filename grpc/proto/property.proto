@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package propertyAPI;
 
+import "google/protobuf/timestamp.proto";
+
 message Filter { 
   string field = 1;
   string eq =  2;
@@ -32,7 +34,7 @@ service ClientService {
   rpc ReadClients (Query) returns (Clients);
   rpc CreateClient (Client) returns (Client);
   rpc UpdateClient (Client) returns (Client);
-  rpc DeleteClient (ClientId) returns (DeleteClient);
+  rpc DeleteClient (ClientId) returns (DeleteClientResponse);
 }
 
 message ClientId {
@@ -51,7 +53,7 @@ message Clients {
   repeated Client clients = 1;
 }
 
-message DeleteClient {
+message DeleteClientResponse {
   bool deleted = 1;
 }
 
@@ -61,7 +63,7 @@ service PropertyService {
   rpc ReadProperties (Query) returns (Properties);
   rpc CreateProperty (Property) returns (Property);
   rpc UpdateProperty (Property) returns (Property);
-  rpc DeleteProperty (PropertyId) returns (DeleteProperty);
+  rpc DeleteProperty (PropertyId) returns (DeletePropertyResponse);
 }
 
 message PropertyId {
@@ -85,7 +87,7 @@ message Properties {
   repeated Property properties = 1;
 }
 
-message DeleteProperty {
+message DeletePropertyResponse {
   bool deleted = 1;
 }
 
@@ -95,7 +97,7 @@ service ReservationService {
   rpc ReadReservations (Query) returns (Reservations);
   rpc CreateReservation (Reservation) returns (Reservation);
   rpc UpdateReservation (Reservation) returns (Reservation);
-  rpc DeleteReservation (ReservationId) returns (DeleteReservation);
+  rpc DeleteReservation (ReservationId) returns (DeleteReservationResponse);
 }
 
 message ReservationId {
@@ -118,6 +120,6 @@ message Reservations {
   repeated Reservation reservations = 1;
 }
 
-message DeleteReservation {
+message DeleteReservationResponse {
   bool deleted = 1;
 }

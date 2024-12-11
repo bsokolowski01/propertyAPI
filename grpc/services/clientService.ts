@@ -1,16 +1,21 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { filter, paginate, sort } from './filters.js';
+import { filter, paginate, sort } from './filters';
+import { Client } from '../types/propertyAPI/Client';
+import { ClientId } from '../types/propertyAPI/ClientId';
+import { Clients } from '../types/propertyAPI/Clients';
+import { Query } from '../types/propertyAPI/Query';
+import { DeleteClientResponse } from '../types/propertyAPI/DeleteClientResponse';
 
 const clientsFilePath = 'data/client.json';
-const clients = JSON.parse(fs.readFileSync(clientsFilePath, 'utf8'));
+const clients: Client[] = JSON.parse(fs.readFileSync(clientsFilePath, 'utf8'));
 
-const getNextId = (items) => {
-  return items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
+const getNextId = (items: Client[]): number => {
+  return items.length > 0 ? Math.max(...items.map(item => item.id).filter(id => id !== undefined)) + 1 : 1;
 };
 
 const clientService = {
-  readClient: (call, callback) => {
+  readClient: (call: grpc.ServerUnaryCall<ClientId, Client>, callback: grpc.sendUnaryData<Client>): void => {
     const clientId = call.request.id;
     const client = clients.find(c => c.id === clientId);
     if (client) {
@@ -22,9 +27,9 @@ const clientService = {
       });
     }
   },
-  readClients: (call, callback) => {   
+  readClients: (call: grpc.ServerUnaryCall<Query, Clients>, callback: grpc.sendUnaryData<Clients>): void => {
     let result = [...clients];
-    
+
     if (call.request.filters) {
       result = filter(result, call.request.filters);
     }
@@ -37,14 +42,14 @@ const clientService = {
 
     return callback(null, { clients: result });
   },
-  createClient: (call, callback) => {
+  createClient: (call: grpc.ServerUnaryCall<Client, Client>, callback: grpc.sendUnaryData<Client>): void => {
     const data = call.request;
-    const newClientData = { ...data, id: getNextId(clients) };
+    const newClientData: Client = { ...data, id: getNextId(clients) };
     clients.push(newClientData);
     fs.writeFileSync(clientsFilePath, JSON.stringify(clients, null, 2));
     return callback(null, newClientData);
   },
-  updateClient: (call, callback) => {
+  updateClient: (call: grpc.ServerUnaryCall<Client, Client>, callback: grpc.sendUnaryData<Client>): void => {
     const clientInfo = call.request;
     const clientIndex = clients.findIndex(c => c.id === clientInfo.id);
     if (clientIndex === -1) {
@@ -54,7 +59,7 @@ const clientService = {
       });
     }
     const selectedClient = clients[clientIndex];
-    const updatedClient = {
+    const updatedClient: Client = {
       id: selectedClient.id,
       name: clientInfo.name ?? selectedClient.name,
       email: clientInfo.email ?? selectedClient.email,
@@ -65,7 +70,7 @@ const clientService = {
     fs.writeFileSync(clientsFilePath, JSON.stringify(clients, null, 2));
     return callback(null, updatedClient);
   },
-  deleteClient: (call, callback) => {
+  deleteClient: (call: grpc.ServerUnaryCall<ClientId, DeleteClientResponse>, callback: grpc.sendUnaryData<DeleteClientResponse>): void => {
     const clientId = call.request.id;
     const updatedClients = clients.filter(c => c.id !== clientId);
     if (clients.length === updatedClients.length) {

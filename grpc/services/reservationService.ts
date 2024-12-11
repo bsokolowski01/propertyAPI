@@ -1,16 +1,21 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { filter, paginate, sort } from './filters.js';
+import { filter, paginate, sort } from './filters';
+import { Reservation } from '../types/propertyAPI/Reservation';
+import { ReservationId } from '../types/propertyAPI/ReservationId';
+import { Reservations } from '../types/propertyAPI/Reservations';
+import { Query } from '../types/propertyAPI/Query';
+import { DeleteReservationResponse } from '../types/propertyAPI/DeleteReservationResponse';
 
 const reservationsFilePath = 'data/reservation.json';
-const reservations = JSON.parse(fs.readFileSync(reservationsFilePath, 'utf8'));
+const reservations: Reservation[] = JSON.parse(fs.readFileSync(reservationsFilePath, 'utf8'));
 
-const getNextId = (items) => {
-    return items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
-  };
+const getNextId = (items: Reservation[]): number => {
+  return items.length > 0 ? Math.max(...items.map(item => item.id).filter(id => id !== undefined)) + 1 : 1;
+};
 
 const reservationService = {
-  readReservation: (call, callback) => {
+  readReservation: (call: grpc.ServerUnaryCall<ReservationId, Reservation>, callback: grpc.sendUnaryData<Reservation>): void => {
     const reservationId = call.request.id;
     const reservation = reservations.find(r => r.id === reservationId);
     if (reservation) {
@@ -22,9 +27,9 @@ const reservationService = {
       });
     }
   },
-  readReservations: (call, callback) => {
+  readReservations: (call: grpc.ServerUnaryCall<Query, Reservations>, callback: grpc.sendUnaryData<Reservations>): void => {
     let result = [...reservations];
-    
+
     if (call.request.filters) {
       result = filter(result, call.request.filters);
     }
@@ -36,14 +41,14 @@ const reservationService = {
     }
     return callback(null, { reservations: result });
   },
-  createReservation: (call, callback) => {
+  createReservation: (call: grpc.ServerUnaryCall<Reservation, Reservation>, callback: grpc.sendUnaryData<Reservation>): void => {
     const data = call.request;
-    const newReservationData = { ...data, id: getNextId(reservations) };
+    const newReservationData: Reservation = { ...data, id: getNextId(reservations) };
     reservations.push(newReservationData);
     fs.writeFileSync(reservationsFilePath, JSON.stringify(reservations, null, 2));
     return callback(null, newReservationData);
   },
-  updateReservation: (call, callback) => {
+  updateReservation: (call: grpc.ServerUnaryCall<Reservation, Reservation>, callback: grpc.sendUnaryData<Reservation>): void => {
     const reservationInfo = call.request;
     const reservationIndex = reservations.findIndex(r => r.id === reservationInfo.id);
     if (reservationIndex === -1) {
@@ -53,18 +58,17 @@ const reservationService = {
       });
     }
     const selectedReservation = reservations[reservationIndex];
-    const updatedReservation = {
+    const updatedReservation: Reservation = {
       id: selectedReservation.id,
       propertyId: reservationInfo.propertyId ?? selectedReservation.propertyId,
       clientId: reservationInfo.clientId ?? selectedReservation.clientId,
-      startDate: reservationInfo.startDate ?? selectedReservation.startDate,
-      endDate: reservationInfo.endDate ?? selectedReservation.endDate
+      date: reservationInfo.date ?? selectedReservation.date
     };
     reservations.splice(reservationIndex, 1, updatedReservation);
     fs.writeFileSync(reservationsFilePath, JSON.stringify(reservations, null, 2));
     return callback(null, updatedReservation);
   },
-  deleteReservation: (call, callback) => {
+  deleteReservation: (call: grpc.ServerUnaryCall<ReservationId, DeleteReservationResponse>, callback: grpc.sendUnaryData<DeleteReservationResponse>): void => {
     const reservationId = call.request.id;
     const reservationIndex = reservations.findIndex(r => r.id === reservationId);
     if (reservationIndex === -1) {

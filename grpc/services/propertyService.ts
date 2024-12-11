@@ -1,16 +1,21 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { filter, paginate, sort } from './filters.js';
+import { filter, paginate, sort } from './filters';
+import { Property } from '../types/propertyAPI/Property';
+import { PropertyId } from '../types/propertyAPI/PropertyId';
+import { Properties } from '../types/propertyAPI/Properties';
+import { Query } from '../types/propertyAPI/Query';
+import { DeletePropertyResponse } from '../types/propertyAPI/DeletePropertyResponse';
 
 const propertiesFilePath = 'data/property.json';
-const properties = JSON.parse(fs.readFileSync(propertiesFilePath, 'utf8'));
+const properties: Property[] = JSON.parse(fs.readFileSync(propertiesFilePath, 'utf8'));
 
-const getNextId = (items) => {
-    return items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
-  };
+const getNextId = (items: Property[]): number => {
+  return items.length > 0 ? Math.max(...items.map(item => item.id).filter(id => id !== undefined)) + 1 : 1;
+};
 
 const propertyService = {
-  readProperty: (call, callback) => {
+  readProperty: (call: grpc.ServerUnaryCall<PropertyId, Property>, callback: grpc.sendUnaryData<Property>): void => {
     const propertyId = call.request.id;
     const property = properties.find(p => p.id === propertyId);
     if (property) {
@@ -22,9 +27,9 @@ const propertyService = {
       });
     }
   },
-  readProperties: (call, callback) => {
+  readProperties: (call: grpc.ServerUnaryCall<Query, Properties>, callback: grpc.sendUnaryData<Properties>): void => {
     let result = [...properties];
-    
+
     if (call.request.filters) {
       result = filter(result, call.request.filters);
     }
@@ -36,14 +41,14 @@ const propertyService = {
     }
     return callback(null, { properties: result });
   },
-  createProperty: (call, callback) => {
+  createProperty: (call: grpc.ServerUnaryCall<Property, Property>, callback: grpc.sendUnaryData<Property>): void => {
     const data = call.request;
-    const newPropertyData = { ...data, id: getNextId(properties) };
+    const newPropertyData: Property = { ...data, id: getNextId(properties) };
     properties.push(newPropertyData);
     fs.writeFileSync(propertiesFilePath, JSON.stringify(properties, null, 2));
     return callback(null, newPropertyData);
   },
-  updateProperty: (call, callback) => {
+  updateProperty: (call: grpc.ServerUnaryCall<Property, Property>, callback: grpc.sendUnaryData<Property>): void => {
     const propertyInfo = call.request;
     const propertyIndex = properties.findIndex(p => p.id === propertyInfo.id);
     if (propertyIndex === -1) {
@@ -53,7 +58,7 @@ const propertyService = {
       });
     }
     const selectedProperty = properties[propertyIndex];
-    const updatedProperty = {
+    const updatedProperty: Property = {
       id: selectedProperty.id,
       address: propertyInfo.address ?? selectedProperty.address,
       description: propertyInfo.description ?? selectedProperty.description,
@@ -69,7 +74,7 @@ const propertyService = {
     fs.writeFileSync(propertiesFilePath, JSON.stringify(properties, null, 2));
     return callback(null, updatedProperty);
   },
-  deleteProperty: (call, callback) => {
+  deleteProperty: (call: grpc.ServerUnaryCall<PropertyId, DeletePropertyResponse>, callback: grpc.sendUnaryData<DeletePropertyResponse>): void => {
     const propertyId = call.request.id;
     const propertyIndex = properties.findIndex(p => p.id === propertyId);
     if (propertyIndex === -1) {
