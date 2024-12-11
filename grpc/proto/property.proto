@@ -16,12 +16,12 @@ message Filter {
   double lt = 9;
   double gte = 10;
   double lte = 11;
-  google.protobuf.Timestamp eq_date = 12;
-  google.protobuf.Timestamp neq_date = 13;
-  google.protobuf.Timestamp gt_date = 14;
-  google.protobuf.Timestamp lt_date = 15;
-  google.protobuf.Timestamp gte_date = 16;
-  google.protobuf.Timestamp lte_date = 17;
+  string eq_date = 12;
+  string neq_date = 13;
+  string gt_date = 14;
+  string lt_date = 15;
+  string gte_date = 16;
+  string lte_date = 17;
 }
 
 message Sort {

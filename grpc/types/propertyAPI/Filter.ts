@@ -1,6 +1,5 @@
 // Original file: grpc/proto/property.proto
 
-import type { Timestamp as _google_protobuf_Timestamp, Timestamp__Output as _google_protobuf_Timestamp__Output } from '../google/protobuf/Timestamp';
 
 export interface Filter {
   'field'?: (string);
@@ -14,12 +13,12 @@ export interface Filter {
   'lt'?: (number | string);
   'gte'?: (number | string);
   'lte'?: (number | string);
-  'eqDate'?: (_google_protobuf_Timestamp | null);
-  'neqDate'?: (_google_protobuf_Timestamp | null);
-  'gtDate'?: (_google_protobuf_Timestamp | null);
-  'ltDate'?: (_google_protobuf_Timestamp | null);
-  'gteDate'?: (_google_protobuf_Timestamp | null);
-  'lteDate'?: (_google_protobuf_Timestamp | null);
+  'eqDate'?: (string);
+  'neqDate'?: (string);
+  'gtDate'?: (string);
+  'ltDate'?: (string);
+  'gteDate'?: (string);
+  'lteDate'?: (string);
 }
 
 export interface Filter__Output {
@@ -34,10 +33,10 @@ export interface Filter__Output {
   'lt': (number);
   'gte': (number);
   'lte': (number);
-  'eqDate': (_google_protobuf_Timestamp__Output | null);
-  'neqDate': (_google_protobuf_Timestamp__Output | null);
-  'gtDate': (_google_protobuf_Timestamp__Output | null);
-  'ltDate': (_google_protobuf_Timestamp__Output | null);
-  'gteDate': (_google_protobuf_Timestamp__Output | null);
-  'lteDate': (_google_protobuf_Timestamp__Output | null);
+  'eqDate': (string);
+  'neqDate': (string);
+  'gtDate': (string);
+  'ltDate': (string);
+  'gteDate': (string);
+  'lteDate': (string);
 }
