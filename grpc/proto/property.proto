@@ -1,15 +1,27 @@
-syntax = "proto3";    
+syntax = "proto3";
 
 package propertyAPI;
 
 import "google/protobuf/timestamp.proto";
 
-message Filter { 
+message Filter {
   string field = 1;
-  string eq =  2;
-  string neq = 3;
+  string eq_string = 2;
+  string neq_string = 3;
   string contains = 4;
   string notContains = 5;
+  double eq_number = 6;
+  double neq_number = 7;
+  double gt = 8;
+  double lt = 9;
+  double gte = 10;
+  double lte = 11;
+  google.protobuf.Timestamp eq_date = 12;
+  google.protobuf.Timestamp neq_date = 13;
+  google.protobuf.Timestamp gt_date = 14;
+  google.protobuf.Timestamp lt_date = 15;
+  google.protobuf.Timestamp gte_date = 16;
+  google.protobuf.Timestamp lte_date = 17;
 }
 
 message Sort {
