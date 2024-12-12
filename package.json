@@ -9,7 +9,7 @@
     "startRestApi": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx ./restAPI/index.ts",
     "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
     "startGrpcServer": "nodemon --watch ./grpc --ext ts --exec npx tsx ./grpc/server.ts",
-    "startGrpcClient": "node ./grpc/client.js"
+    "startGrpcClient": "npx tsx ./grpc/client.js"
   },
   "author": "",
   "license": "ISC",
