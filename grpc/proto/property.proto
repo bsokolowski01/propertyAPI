@@ -2,26 +2,10 @@ syntax = "proto3";
 
 package propertyAPI;
 
-import "google/protobuf/timestamp.proto";
-
 message Filter {
   string field = 1;
-  string eq_string = 2;
-  string neq_string = 3;
-  string contains = 4;
-  string notContains = 5;
-  double eq_number = 6;
-  double neq_number = 7;
-  double gt = 8;
-  double lt = 9;
-  double gte = 10;
-  double lte = 11;
-  string eq_date = 12;
-  string neq_date = 13;
-  string gt_date = 14;
-  string lt_date = 15;
-  string gte_date = 16;
-  string lte_date = 17;
+  string operator = 2;
+  string value = 3;
 }
 
 message Sort {
@@ -46,7 +30,7 @@ service ClientService {
   rpc ReadClients (Query) returns (Clients);
   rpc CreateClient (Client) returns (Client);
   rpc UpdateClient (Client) returns (Client);
-  rpc DeleteClient (ClientId) returns (DeleteClientResponse);
+  rpc DeleteClient (ClientId) returns (DeleteClient);
 }
 
 message ClientId {
@@ -65,7 +49,7 @@ message Clients {
   repeated Client clients = 1;
 }
 
-message DeleteClientResponse {
+message DeleteClient {
   bool deleted = 1;
 }
 
@@ -75,7 +59,7 @@ service PropertyService {
   rpc ReadProperties (Query) returns (Properties);
   rpc CreateProperty (Property) returns (Property);
   rpc UpdateProperty (Property) returns (Property);
-  rpc DeleteProperty (PropertyId) returns (DeletePropertyResponse);
+  rpc DeleteProperty (PropertyId) returns (DeleteProperty);
 }
 
 message PropertyId {
@@ -99,7 +83,7 @@ message Properties {
   repeated Property properties = 1;
 }
 
-message DeletePropertyResponse {
+message DeleteProperty {
   bool deleted = 1;
 }
 
@@ -109,7 +93,7 @@ service ReservationService {
   rpc ReadReservations (Query) returns (Reservations);
   rpc CreateReservation (Reservation) returns (Reservation);
   rpc UpdateReservation (Reservation) returns (Reservation);
-  rpc DeleteReservation (ReservationId) returns (DeleteReservationResponse);
+  rpc DeleteReservation (ReservationId) returns (DeleteReservation);
 }
 
 message ReservationId {
@@ -132,6 +116,6 @@ message Reservations {
   repeated Reservation reservations = 1;
 }
 
-message DeleteReservationResponse {
+message DeleteReservation {
   bool deleted = 1;
 }

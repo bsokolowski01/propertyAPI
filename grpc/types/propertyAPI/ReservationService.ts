@@ -2,7 +2,7 @@
 
 import type * as grpc from '@grpc/grpc-js'
 import type { MethodDefinition } from '@grpc/proto-loader'
-import type { DeleteReservationResponse as _propertyAPI_DeleteReservationResponse, DeleteReservationResponse__Output as _propertyAPI_DeleteReservationResponse__Output } from '../propertyAPI/DeleteReservationResponse';
+import type { DeleteReservation as _propertyAPI_DeleteReservation, DeleteReservation__Output as _propertyAPI_DeleteReservation__Output } from '../propertyAPI/DeleteReservation';
 import type { Query as _propertyAPI_Query, Query__Output as _propertyAPI_Query__Output } from '../propertyAPI/Query';
 import type { Reservation as _propertyAPI_Reservation, Reservation__Output as _propertyAPI_Reservation__Output } from '../propertyAPI/Reservation';
 import type { ReservationId as _propertyAPI_ReservationId, ReservationId__Output as _propertyAPI_ReservationId__Output } from '../propertyAPI/ReservationId';
@@ -18,14 +18,14 @@ export interface ReservationServiceClient extends grpc.Client {
   createReservation(argument: _propertyAPI_Reservation, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_Reservation__Output>): grpc.ClientUnaryCall;
   createReservation(argument: _propertyAPI_Reservation, callback: grpc.requestCallback<_propertyAPI_Reservation__Output>): grpc.ClientUnaryCall;
   
-  DeleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  DeleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  DeleteReservation(argument: _propertyAPI_ReservationId, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  DeleteReservation(argument: _propertyAPI_ReservationId, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  deleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  deleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  deleteReservation(argument: _propertyAPI_ReservationId, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
-  deleteReservation(argument: _propertyAPI_ReservationId, callback: grpc.requestCallback<_propertyAPI_DeleteReservationResponse__Output>): grpc.ClientUnaryCall;
+  DeleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  DeleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  DeleteReservation(argument: _propertyAPI_ReservationId, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  DeleteReservation(argument: _propertyAPI_ReservationId, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  deleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  deleteReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  deleteReservation(argument: _propertyAPI_ReservationId, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
+  deleteReservation(argument: _propertyAPI_ReservationId, callback: grpc.requestCallback<_propertyAPI_DeleteReservation__Output>): grpc.ClientUnaryCall;
   
   ReadReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_propertyAPI_Reservation__Output>): grpc.ClientUnaryCall;
   ReadReservation(argument: _propertyAPI_ReservationId, metadata: grpc.Metadata, callback: grpc.requestCallback<_propertyAPI_Reservation__Output>): grpc.ClientUnaryCall;
@@ -59,7 +59,7 @@ export interface ReservationServiceClient extends grpc.Client {
 export interface ReservationServiceHandlers extends grpc.UntypedServiceImplementation {
   CreateReservation: grpc.handleUnaryCall<_propertyAPI_Reservation__Output, _propertyAPI_Reservation>;
   
-  DeleteReservation: grpc.handleUnaryCall<_propertyAPI_ReservationId__Output, _propertyAPI_DeleteReservationResponse>;
+  DeleteReservation: grpc.handleUnaryCall<_propertyAPI_ReservationId__Output, _propertyAPI_DeleteReservation>;
   
   ReadReservation: grpc.handleUnaryCall<_propertyAPI_ReservationId__Output, _propertyAPI_Reservation>;
   
@@ -71,7 +71,7 @@ export interface ReservationServiceHandlers extends grpc.UntypedServiceImplement
 
 export interface ReservationServiceDefinition extends grpc.ServiceDefinition {
   CreateReservation: MethodDefinition<_propertyAPI_Reservation, _propertyAPI_Reservation, _propertyAPI_Reservation__Output, _propertyAPI_Reservation__Output>
-  DeleteReservation: MethodDefinition<_propertyAPI_ReservationId, _propertyAPI_DeleteReservationResponse, _propertyAPI_ReservationId__Output, _propertyAPI_DeleteReservationResponse__Output>
+  DeleteReservation: MethodDefinition<_propertyAPI_ReservationId, _propertyAPI_DeleteReservation, _propertyAPI_ReservationId__Output, _propertyAPI_DeleteReservation__Output>
   ReadReservation: MethodDefinition<_propertyAPI_ReservationId, _propertyAPI_Reservation, _propertyAPI_ReservationId__Output, _propertyAPI_Reservation__Output>
   ReadReservations: MethodDefinition<_propertyAPI_Query, _propertyAPI_Reservations, _propertyAPI_Query__Output, _propertyAPI_Reservations__Output>
   UpdateReservation: MethodDefinition<_propertyAPI_Reservation, _propertyAPI_Reservation, _propertyAPI_Reservation__Output, _propertyAPI_Reservation__Output>

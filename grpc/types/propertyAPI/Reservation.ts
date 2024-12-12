@@ -6,12 +6,12 @@ export interface Reservation {
   'id'?: (number);
   'propertyId'?: (number);
   'clientId'?: (number);
-  'date'?: (_propertyAPI_ReservationDate | null);
+  'date'?: (_propertyAPI_ReservationDate);
 }
 
 export interface Reservation__Output {
   'id': (number);
   'propertyId': (number);
   'clientId': (number);
-  'date': (_propertyAPI_ReservationDate__Output | null);
+  'date': (_propertyAPI_ReservationDate__Output);
 }

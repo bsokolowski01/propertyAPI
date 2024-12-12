@@ -2,11 +2,11 @@
 
 
 export interface ReservationDate {
-  'start'?: (Date);
-  'end'?: (Date);
+  'start'?: (string);
+  'end'?: (string);
 }
 
 export interface ReservationDate__Output {
-  'start': (Date);
-  'end': (Date);
+  'start': (string);
+  'end': (string);
 }

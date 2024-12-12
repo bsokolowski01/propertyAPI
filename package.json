@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx index.ts",
     "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
-    "startGrpc": "nodemon --watch ./grpc --exec node ./grpc/server.js"
+    "startGrpc": "nodemon --watch ./grpc --ext ts --exec npx tsx ./grpc/server.ts"
   },
   "author": "",
   "license": "ISC",

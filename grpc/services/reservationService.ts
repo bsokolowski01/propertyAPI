@@ -27,9 +27,20 @@ const reservationService = {
       });
     }
   },
-  readReservations: (call: grpc.ServerUnaryCall<Query, Reservations>, callback: grpc.sendUnaryData<Reservations>): void => {
-    let result = [...reservations];
-
+  readReservations: (
+    call: grpc.ServerUnaryCall<Query, Reservations>, 
+    callback: grpc.sendUnaryData<Reservations>
+  ): void => {
+    const startDate = reservations.date.start ? new Date(reservations.date.start) : undefined;
+const endDate = reservations.date.end ? new Date(reservations.date.end) : undefined;
+    let result = [...reservations].map(reservation => ({
+      ...reservation,
+      date: reservation.date ? {
+        start: reservation.date.start ? new Date(reservation.date.start) : undefined,
+        end: reservation.date.end ? new Date(reservation.date.end) : undefined
+      } : undefined,
+    }));
+  
     if (call.request.filters) {
       result = filter(result, call.request.filters);
     }

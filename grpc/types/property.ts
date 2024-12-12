@@ -10,19 +10,14 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 };
 
 export interface ProtoGrpcType {
-  google: {
-    protobuf: {
-      Timestamp: MessageTypeDefinition
-    }
-  }
   propertyAPI: {
     Client: MessageTypeDefinition
     ClientId: MessageTypeDefinition
     ClientService: SubtypeConstructor<typeof grpc.Client, _propertyAPI_ClientServiceClient> & { service: _propertyAPI_ClientServiceDefinition }
     Clients: MessageTypeDefinition
-    DeleteClientResponse: MessageTypeDefinition
-    DeletePropertyResponse: MessageTypeDefinition
-    DeleteReservationResponse: MessageTypeDefinition
+    DeleteClient: MessageTypeDefinition
+    DeleteProperty: MessageTypeDefinition
+    DeleteReservation: MessageTypeDefinition
     Filter: MessageTypeDefinition
     Pagination: MessageTypeDefinition
     Properties: MessageTypeDefinition
