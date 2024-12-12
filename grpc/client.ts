@@ -7,7 +7,7 @@ import { DeleteClientResponse__Output } from './types/propertyAPI/DeleteClientRe
 import { Client__Output } from './types/propertyAPI/Client';
 import { Clients__Output } from './types/propertyAPI/Clients';
 
-const packageDefinition = protoLoader.loadSync('./proto/property.proto', {
+const packageDefinition = protoLoader.loadSync('grpc/proto/property.proto', {
   keepCase: true,
   longs: String,
   enums: String,
