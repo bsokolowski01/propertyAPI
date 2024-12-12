@@ -1,9 +1,9 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
+import validator from 'validator';
+import { Property } from '../../../interfaces/propertyInterface';
 
-import { Property } from '../../interfaces/propertyInterface';
-
-export const propertyByIdRouterPATCH = express.Router();
+export const propertyByIdRouterPATCH: Router = express.Router();
 
 /**
  * @swagger
@@ -42,13 +42,16 @@ propertyByIdRouterPATCH.patch('/properties/:id', (req: Request, res: Response): 
     const propertyId = parseInt(req.params.id, 10);
     const { description }: Property = req.body;
 
-    if (!description) {
-        res.status(400).send({ error: 'Description is required' });
-        return;
-    }
+    try {
+        if (!validator.isLength(description, { min: 1 })) {
+            throw new Error('Description is required');
+        }
+        if (typeof description !== "string") {
+            throw new Error('Description must be a string')
+        }
 
-    if (typeof description !== "string") {
-        res.status(400).send({ error: 'Description must be a string' });
+    } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
 

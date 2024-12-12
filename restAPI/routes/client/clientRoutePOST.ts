@@ -1,8 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
-
-import { Client } from '../../interfaces/clientInterface'
+import { Client } from '../../../interfaces/clientInterface'
 
 export const clientRouterPOST: Router = express.Router();
 
@@ -52,7 +51,7 @@ export const clientRouterPOST: Router = express.Router();
  *                       example: john.doe@example.com
  *                     phone:
  *                       type: string
- *                       example: 123-456-7890
+ *                       example: +48123456789
  *                     address:
  *                       type: string
  *                       example: 123 Main St
@@ -73,6 +72,10 @@ clientRouterPOST.post('/clients', (req: Request, res: Response): void => {
     try {
         if (!validator.isEmail(email)) {
             throw new Error('Invalid email address');
+        }
+
+        if (!validator.isMobilePhone(phone)) {
+            throw new Error('Invalid phone number');
         }
     } catch (error) {
         res.status(400).json({ error: (error as Error).message });

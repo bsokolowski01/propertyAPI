@@ -1,11 +1,10 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
+import { Reservation } from '../../../interfaces/reservationInterface';
+import { Property } from '../../../interfaces/propertyInterface';
+import { Client } from '../../../interfaces/clientInterface';
 
-import { Reservation } from '../../interfaces/reservationInterface';
-import { Property } from '../../interfaces/propertyInterface';
-import { Client } from '../../interfaces/clientInterface';
-
-export const reservationRouterPOST = express.Router();
+export const reservationRouterPOST: Router = express.Router();
 
 /**
  * @swagger
@@ -38,12 +37,18 @@ export const reservationRouterPOST = express.Router();
  */
 
 reservationRouterPOST.post('/reservations', (req: Request, res: Response): void => {
-    const { propertyId, clientId }: { propertyId: Property, clientId: Reservation } = req.body;
+    const { propertyId, clientId }: Reservation = req.body;
 
-    if (typeof propertyId !== 'number' || typeof clientId !== 'number') {
-        res.status(400).send({ error: 'Invalid input' });
+    try {
+        if (typeof propertyId !== 'number' || typeof clientId !== 'number') {
+            throw new Error('Invalid input');
+        }
+    }
+    catch (error) {
+        res.status(400).json({ error: (error as Error).message });
         return;
     }
+
 
     fs.readFile('data/property.json', 'utf8', (err, propertyData) => {
         if (err) {
@@ -63,13 +68,16 @@ reservationRouterPOST.post('/reservations', (req: Request, res: Response): void 
 
         const property = properties.find((p: Property) => p.id == propertyId);
 
-        if (!property) {
-            res.status(404).send({ error: 'Property not found' });
-            return;
+        try {
+            if (!property) {
+                throw new Error('Property not found');
+            }
+            if (property.status !== 'for sale' && property.status !== 'for rent') {
+                throw new Error('Reservation can only be made for properties with status "for sale" or "for rent"');
+            }
         }
-
-        if (property.status !== 'for sale' && property.status !== 'for rent') {
-            res.status(400).send({ error: 'Reservation can only be made for properties with status "for sale" or "for rent"' });
+        catch (error) {
+            res.status(404).json({ error: (error as Error).message });
             return;
         }
 
@@ -91,8 +99,13 @@ reservationRouterPOST.post('/reservations', (req: Request, res: Response): void 
 
             const client = clients.find((c: Client) => c.id === clientId);
 
-            if (!client) {
-                res.status(404).send({ error: 'Client not found' });
+            try {
+                if (!client) {
+                    throw new Error('Client not found');
+                }
+            }
+            catch (error) {
+                res.status(404).json({ error: (error as Error).message });
                 return;
             }
 
@@ -115,13 +128,13 @@ reservationRouterPOST.post('/reservations', (req: Request, res: Response): void 
                 const lastId = reservations.length > 0 ? reservations[reservations.length - 1].id : 0;
                 const newId = lastId + 1;
 
-                const newReservation = {
+                const newReservation: Reservation = {
                     id: newId,
                     propertyId,
                     clientId,
                     date: {
-                        start: new Date().toISOString(),
-                        end: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString() // 3 days later
+                        start: new Date(),
+                        end: new Date(new Date().setDate(new Date().getDate() + 3))
                     },
                 };
 

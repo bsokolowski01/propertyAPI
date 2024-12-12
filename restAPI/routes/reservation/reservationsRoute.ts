@@ -1,9 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
+import { Reservation } from '../../../interfaces/reservationInterface';
 
-import { Reservation } from '../../interfaces/reservationInterface';
-
-export const reservationsRouter = express.Router();
+export const reservationsRouter: Router = express.Router();
 
 /**
  * @swagger

@@ -3,7 +3,7 @@ export interface Reservation {
     propertyId: number;
     clientId: number;
     date: {
-        start: string;
-        end: string;
+        start: Date;
+        end: Date;
     }
 }

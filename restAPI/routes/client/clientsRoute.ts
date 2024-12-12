@@ -1,7 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-
-import { Client } from '../../interfaces/clientInterface';
+import { Client } from '../../../interfaces/clientInterface';
 
 export const clientsRouter: Router = express.Router();
 
@@ -32,7 +31,7 @@ export const clientsRouter: Router = express.Router();
  *                     example: john.doe@example.com
  *                   phone:
  *                     type: string
- *                     example: 123-456-7890
+ *                     example: +48123456789
  *                   address:
  *                     type: string
  *                     example: 123 Main St

@@ -1,9 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
+import { Property } from '../../../interfaces/propertyInterface';
 
-import { Property } from '../../interfaces/propertyInterface';
-
-export const propertiesRouter = express.Router();
+export const propertiesRouter: Router = express.Router();
 
 /**
  * @swagger
