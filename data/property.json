@@ -6,7 +6,7 @@
     "rooms": 3,
     "surfaceArea": "86 m2",
     "status": "for rent",
-    "type": "land",
+    "type": "office",
     "rent": "4300 zł"
   },
   {
@@ -28,7 +28,7 @@
     "status": "sold",
     "type": "apartment",
     "price": "716300 zł",
-    "pricePerMeter": "8329.07 zł/m2"
+    "pricePerMeter": "8329 zł/m2"
   },
   {
     "id": 4,
@@ -39,7 +39,7 @@
     "status": "sold",
     "type": "apartment",
     "price": "989100 zł",
-    "pricePerMeter": "12845.45 zł/m2"
+    "pricePerMeter": "12845 zł/m2"
   },
   {
     "id": 5,
@@ -58,9 +58,9 @@
     "rooms": 5,
     "surfaceArea": "66 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "office",
     "price": "928500 zł",
-    "pricePerMeter": "14068.18 zł/m2"
+    "pricePerMeter": "14068 zł/m2"
   },
   {
     "id": 7,
@@ -69,9 +69,9 @@
     "rooms": 1,
     "surfaceArea": "44 m2",
     "status": "sold",
-    "type": "land",
+    "type": "office",
     "price": "331500 zł",
-    "pricePerMeter": "7534.09 zł/m2"
+    "pricePerMeter": "7534 zł/m2"
   },
   {
     "id": 8,
@@ -82,7 +82,7 @@
     "status": "sold",
     "type": "apartment",
     "price": "947700 zł",
-    "pricePerMeter": "9572.73 zł/m2"
+    "pricePerMeter": "9573 zł/m2"
   },
   {
     "id": 9,
@@ -91,9 +91,9 @@
     "rooms": 1,
     "surfaceArea": "35 m2",
     "status": "for sale",
-    "type": "land",
+    "type": "office",
     "price": "348700 zł",
-    "pricePerMeter": "9962.86 zł/m2"
+    "pricePerMeter": "9963 zł/m2"
   },
   {
     "id": 10,
@@ -102,8 +102,8 @@
     "rooms": 4,
     "surfaceArea": "51 m2",
     "status": "sold",
-    "type": "land",
+    "type": "office",
     "price": "853500 zł",
-    "pricePerMeter": "16735.29 zł/m2"
+    "pricePerMeter": "16735 zł/m2"
   }
 ]

@@ -3,10 +3,10 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import fs from 'fs';
 import cors from 'cors';
+import { resolvers } from './resolvers/resolver';
 
 const typeDefs = fs.readFileSync('./graphQL/schemas/schema.graphql', { encoding: 'utf-8' });
 
-import { resolvers } from './resolvers/resolver';
 
 const app = express();
 app.use(express.json());

@@ -61,26 +61,5 @@
     "email": "Clotilde68@gmail.com",
     "phone": "686-729-7513",
     "address": "446 O'Conner Parks"
-  },
-  {
-    "id": 11,
-    "name": "New Client",
-    "email": "newclient@example.com",
-    "phone": "123-456-7890",
-    "address": "123 Main St"
-  },
-  {
-    "id": 12,
-    "name": "New Client",
-    "email": "newclient@example.com",
-    "phone": "123-456-7890",
-    "address": "123 Main St"
-  },
-  {
-    "id": 13,
-    "name": "Updated Client",
-    "email": "updatedclient@example.com",
-    "phone": "123-456-7890",
-    "address": "123 Main St"
   }
 ]
