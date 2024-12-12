@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx index.ts",
-    "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts"
+    "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
+    "startGrpc": "nodemon --watch ./grpc --ext ts --exec npx tsx ./grpc/server.ts"
   },
   "author": "",
   "license": "ISC",
@@ -23,10 +24,12 @@
     "npm": "^10.9.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "ts-proto": "^2.6.0",
     "url": "^0.11.4",
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@protobuf-ts/plugin": "^2.9.4",
     "@types/cors": "^2.8.17",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
