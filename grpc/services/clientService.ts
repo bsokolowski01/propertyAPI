@@ -1,5 +1,6 @@
 import fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
+import validator from 'validator';
 import { filter, paginate, sort } from './filters';
 import { Client } from '../types/propertyAPI/Client';
 import { ClientId } from '../types/propertyAPI/ClientId';
@@ -44,6 +45,12 @@ const clientService = {
   },
   createClient: (call: grpc.ServerUnaryCall<Client, Client>, callback: grpc.sendUnaryData<Client>): void => {
     const data = call.request;
+    if (!data.email || !validator.isEmail(data.email)) {
+      return callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "Invalid email address"
+      });
+    }
     const newClientData: Client = { ...data, id: getNextId(clients) };
     clients.push(newClientData);
     fs.writeFileSync(clientsFilePath, JSON.stringify(clients, null, 2));
@@ -51,6 +58,12 @@ const clientService = {
   },
   updateClient: (call: grpc.ServerUnaryCall<Client, Client>, callback: grpc.sendUnaryData<Client>): void => {
     const clientInfo = call.request;
+    if (!clientInfo.email || !validator.isEmail(clientInfo.email)) {
+      return callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "Invalid email address"
+      });
+    }
     const clientIndex = clients.findIndex(c => c.id === clientInfo.id);
     if (clientIndex === -1) {
       return callback({

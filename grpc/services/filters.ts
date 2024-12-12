@@ -1,3 +1,4 @@
+// Updated filtering function to support nested date fields
 import { Filter } from '../types/propertyAPI/Filter';
 import { Sort } from '../types/propertyAPI/Sort';
 import { Pagination } from '../types/propertyAPI/Pagination';
@@ -41,17 +42,20 @@ const getNestedValue = <T>(obj: T, path: string): unknown => {
 export const filter = <T>(records: T[], filters: Filter[]): T[] => {
   return records.filter(record => {
     return filters.every(filter => {
-      const value = filter.field ? getNestedValue(record, filter.field) : undefined; // Pobierz zagnieżdżoną wartość
-      console.log()
+
+      let value = filter.field ? getNestedValue(record, filter.field) : undefined;
       const operator = filter.operator;
       const filterValue = filter.value;
 
       if (operator && filterValue !== undefined) {
+
         if (typeof value === 'string' && stringFilters[operator]) {
           return stringFilters[operator](value, filterValue);
-        } else if (typeof value === 'number' && numberFilters[operator]) {
+        }
+        if (typeof value === 'number' && numberFilters[operator]) {
           return numberFilters[operator](value, filterValue);
-        } else if (value instanceof Date && dateFilters[operator]) {
+        }
+        if (value instanceof Date && dateFilters[operator]) {
           return dateFilters[operator](value, filterValue);
         }
       }

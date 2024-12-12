@@ -63,17 +63,24 @@
     "address": "446 O'Conner Parks"
   },
   {
-    "id": 10,
-    "name": "Karen Kerluke",
-    "email": "Connor.Gusikowski@gmail.com",
-    "phone": "1-617-848-0504",
-    "address": "25212 Koss Estate"
+    "id": 11,
+    "name": "New Client",
+    "email": "newclient@example.com",
+    "phone": "123-456-7890",
+    "address": "123 Main St"
   },
   {
-    "id": 11,
-    "name": "Karen Kerluke",
-    "email": "Connor.Gusikowski@gmail.com",
-    "phone": "1-617-848-0504",
-    "address": "25212 Koss Estate"
+    "id": 12,
+    "name": "New Client",
+    "email": "newclient@example.com",
+    "phone": "123-456-7890",
+    "address": "123 Main St"
+  },
+  {
+    "id": 13,
+    "name": "Updated Client",
+    "email": "updatedclient@example.com",
+    "phone": "123-456-7890",
+    "address": "123 Main St"
   }
 ]
