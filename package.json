@@ -8,7 +8,7 @@
     "start": "npx tsx generator.ts",
     "startRestApi": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx ./restAPI/index.ts",
     "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
-    "startGrpcServer": "nodemon --watch ./grpc --exec node ./grpc/server.js",
+    "startGrpcServer": "nodemon --watch ./grpc --ext ts --exec npx tsx ./grpc/server.ts",
     "startGrpcClient": "node ./grpc/client.js"
   },
   "author": "",
@@ -25,10 +25,12 @@
     "npm": "^10.9.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "ts-proto": "^2.6.0",
     "url": "^0.11.4",
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@protobuf-ts/plugin": "^2.9.4",
     "@types/cors": "^2.8.17",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
