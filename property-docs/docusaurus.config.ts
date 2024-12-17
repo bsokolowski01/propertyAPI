@@ -17,7 +17,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'bsokolowski91', // Update with your GitHub org/user name.
+  organizationName: 'bsokolowski01', // Update with your GitHub org/user name.
   projectName: 'propertyAPI', // Update with your repo name.
 
   onBrokenLinks: 'throw',
@@ -39,16 +39,12 @@ const config: Config = {
           sidebarPath: require.resolve('./sidebars.ts'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/property-api-docs/edit/main/',
+          
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/property-api-docs/edit/main/blog/',
-          // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -85,21 +81,7 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/bsokolowski01/propertyAPI',
-            },
-          ],
-        },
-      ],
+
       copyright: `Copyright © ${new Date().getFullYear()} PropertyAPI, Inc. Built with Docusaurus.`,
     },
     prism: {

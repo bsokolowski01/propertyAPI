@@ -1,47 +1,185 @@
----
-sidebar_position: 1
----
+# PropertyAPI Documentation
 
-# Tutorial Intro
+## Introduction
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**PropertyAPI** is a RESTful API that enables efficient management of properties, clients, and reservations.  
+The API supports CRUD operations on all resources.
 
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+### Base URL
+```
+localhost:8989
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## Resources & Endpoints
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+### 3.1 Clients
 
-## Start your site
+#### List All Clients
 
-Run the development server:
+**Method:** GET  
+**Endpoint:** `/clients`  
 
-```bash
-cd my-website
-npm run start
+**Request Example:**
+```http
+GET /clients HTTP/1.1
+Host: localhost:8989
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+**Response Example:**
+```json
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  },
+  {
+    "id": "2",
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com"
+  }
+]
+```
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+#### Get Client by ID
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+**Method:** GET  
+**Endpoint:** `/clients/{id}`  
+
+**Description:** Retrieves details of a specific client.
+
+---
+
+#### Create a New Client
+
+**Method:** POST  
+**Endpoint:** `/clients`  
+
+**Body Parameters:**
+| Field      | Type    | Required | Description             |
+|------------|---------|----------|-------------------------|
+| `name`     | string  | Yes      | Full name of the client |
+| `email`    | string  | Yes      | Client's email address  |
+| `phone`    | string  | Yes      | Client's phone number  |
+| `address`    | string  | Yes      | Client's address  |
+
+**Request Example:**
+```http
+POST /clients HTTP/1.1
+Host: localhost:8989
+```
+
+```json
+{
+  "name": "Alice Johnson",
+  "email": "alice.johnson@example.com"
+  "phone": "+13807451189",
+  "address": "78800 Shad Club"
+}
+```
+
+**Response Example:**
+```json
+{
+  "id": "11",
+  "name": "Alice Johnson",
+  "email": "alice.johnson@example.com",
+  "phone": "+13807451189",
+  "address": "78800 Shad Club"
+}
+```
+
+---
+
+### 3.2 Properties
+
+#### List All Properties
+
+**Method:** GET  
+**Endpoint:** `/properties`  
+
+**Description:** Retrieves a list of all available properties.
+
+**Response Example:**
+```json
+[
+  {
+    "id": "1",
+    "name": "Seaside Apartment",
+    "location": "Gdańsk, Poland",
+    "price": 450000,
+    "status": "available"
+  },
+  {
+    "id": "2",
+    "name": "Mountain Cabin",
+    "location": "Zakopane, Poland",
+    "price": 300000,
+    "status": "sold"
+  }
+]
+```
+
+---
+
+### 3.3 Reservations
+
+#### List All Reservations
+
+**Method:** GET  
+**Endpoint:** `/reservations`  
+
+**Description:** Retrieve all reservations.
+
+---
+
+## Error Handling
+
+| Status Code | Description                       |
+|-------------|-----------------------------------|
+| `400`       | Bad Request – Validation failed   |
+| `404`       | Not Found – Resource does not exist |
+| `500`       | Internal Server Error             |
+
+**Example Error Response:**
+```json
+{
+  "error": "Resource not found",
+  "status": 404
+}
+```
+
+---
+
+## Examples
+
+### Using curl to Fetch All Properties:
+
+```bash
+curl -X GET "https://api.example.com/v1/properties" \
+-H "Authorization: Bearer <your_token>"
+```
+
+### JavaScript Example (Axios):
+```javascript
+const axios = require('axios');
+
+axios.get('https://api.example.com/v1/properties', {
+  headers: { Authorization: 'Bearer your_token' }
+})
+.then(response => console.log(response.data))
+.catch(error => console.error(error));
+```
+
+---
+
+## FAQs
+
+- **How to handle pagination?**  
+  Use query parameters `?page=` and `?limit=` to paginate responses.  
+
+- **How to filter results?**  
+  Apply query parameters like `?status=available` or `?location=Gdańsk`.
+
+---
+
