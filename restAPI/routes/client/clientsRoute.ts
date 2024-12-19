@@ -59,7 +59,7 @@ clientsRouter.get('/clients', (req: Request, res: Response): void => {
         }
 
         if (!clients || clients.length === 0) {
-            res.status(204).send({ error: 'No content, empty client list' });
+            res.status(404).send({ error: 'Empty client list' });
             return;
         }
 
