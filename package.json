@@ -9,7 +9,8 @@
     "startRestApi": "nodemon --watch . --ignore ./graphQL --ignore ./grpc --ext ts --exec npx tsx ./restAPI/index.ts",
     "startGraphQL": "nodemon --watch ./graphQL --ext ts --exec npx tsx ./graphQL/index.ts",
     "startGrpcServer": "nodemon --watch ./grpc --ext ts --exec npx tsx ./grpc/server.ts",
-    "startGrpcClient": "npx tsx ./grpc/client.js"
+    "startGrpcClient": "npx tsx ./grpc/client.ts",
+    "startDocs": "cd ./property-docs && npm start"
   },
   "author": "",
   "license": "ISC",
@@ -38,6 +39,6 @@
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "5.4.2"
   }
 }
