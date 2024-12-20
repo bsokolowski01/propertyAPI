@@ -1,11 +1,11 @@
 ---
-sidebar_position: 0
+sidebar_position: 1
 ---
 
 # Property API Documentation
 
 ## Overview
-Property API is a RESTful service providing comprehensive property management capabilities, including client management, property listings, and reservation handling.
+Property API is a RESTful service providing comprehensive [property management](./propertyManagements.md) capabilities, including [client management](./clientManagement.md), property listings, and reservation handling.
 
 ## Base Configuration
 - **Base URL**: `http://localhost:8989`
