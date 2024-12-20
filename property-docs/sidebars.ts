@@ -20,6 +20,8 @@ const sidebars: SidebarsConfig = {
 
   tutorialSidebar: [
     "intro",
+    "propertyManagements",
+    "clientManagement",
     {
       type: 'category',
       label: 'Resources & Endpoints',
