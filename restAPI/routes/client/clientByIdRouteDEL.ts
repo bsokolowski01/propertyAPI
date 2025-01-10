@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-import { Client } from '../../../interfaces/clientInterface'
+import { Client } from '../../interfaces/clientInterface'
 
 export const clientIdRouterDEL: Router = express.Router();
 

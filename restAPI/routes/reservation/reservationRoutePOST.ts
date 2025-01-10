@@ -1,8 +1,8 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-import { Reservation } from '../../../interfaces/reservationInterface';
-import { Property } from '../../../interfaces/propertyInterface';
-import { Client } from '../../../interfaces/clientInterface';
+import { Reservation } from '../../interfaces/reservationInterface';
+import { Property } from '../../interfaces/propertyInterface';
+import { Client } from '../../interfaces/clientInterface';
 
 export const reservationRouterPOST: Router = express.Router();
 

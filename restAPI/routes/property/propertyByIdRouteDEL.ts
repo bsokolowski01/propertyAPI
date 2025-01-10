@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 
-import { Property } from '../../../interfaces/propertyInterface';
+import { Property } from '../../interfaces/propertyInterface';
 
 export const propertyIdRouterDEL: Router = express.Router();
 

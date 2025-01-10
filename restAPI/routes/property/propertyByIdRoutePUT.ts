@@ -1,6 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
-import { Property, PropertyStatus, PropertyType } from '../../../interfaces/propertyInterface';
+import { Property, PropertyStatus, PropertyType } from '../../interfaces/propertyInterface';
 
 export const propertyRouterPUT: Router = express.Router();
 
