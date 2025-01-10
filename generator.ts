@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import fs, {} from 'fs/promises'
-import { Client } from './restAPI/interfaces/clientInterface';
-import { Property, PropertyStatus, PropertyType } from './restAPI/interfaces/propertyInterface';
-import { Reservation } from './restAPI/interfaces/reservationInterface';
+import { Client } from './interfaces/clientInterface';
+import { Property, PropertyStatus, PropertyType } from './interfaces/propertyInterface';
+import { Reservation } from './interfaces/reservationInterface';
 
 const clientGenerator = (id: number): Client => {
     faker.seed(id);

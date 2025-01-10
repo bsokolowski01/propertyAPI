@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import fs from 'fs';
 import validator from 'validator';
-import { Property } from '../../interfaces/propertyInterface';
+import { Property } from '../../../interfaces/propertyInterface';
 
 export const propertyByIdRouterPATCH: Router = express.Router();
 
