@@ -11,7 +11,7 @@
     "startGrpcServer": "nodemon --watch ./src/gRPC --ext ts --exec npx tsx ./src/gRPC/server.ts",
     "startGrpcClient": "npx tsx ./src/grpc/client.ts",
     "startDocs": "cd ./src/property-docs && npm install && npm start",
-    "dev": "concurrently \"npm run startRestApi\" \"npm run startGraphQL\" \"npm run startGrpcServer\" "
+    "build": "concurrently \"npm run startRestApi\" \"npm run startGraphQL\" \"npm run startGrpcServer\" "
   },
   "author": "",
   "license": "ISC",
