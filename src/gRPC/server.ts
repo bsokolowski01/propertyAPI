@@ -5,7 +5,7 @@ import { clientService } from './services/clientService';
 import { propertyService } from './services/propertyService';
 import { reservationService } from './services/reservationService';
 
-const packageDefinition = protoLoader.loadSync('src/grpc/proto/property.proto', {
+const packageDefinition = protoLoader.loadSync('src/gRPC/proto/property.proto', {
   keepCase: true,
   longs: String,
   enums: String,
