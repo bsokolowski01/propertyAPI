@@ -137,7 +137,7 @@ const swaggerOptions = {
             },
         }
     },
-    apis: ['restAPI/routes/**/*.js', 'restAPI/routes/**/*.ts']
+    apis: ['./src/restAPI/routes/**/*.js', './src/restAPI/routes/**/*.ts']
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
