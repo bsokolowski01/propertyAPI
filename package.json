@@ -8,7 +8,7 @@
     "start": "npx tsx ./tools/generator.ts",
     "startRestApi": "nodemon --watch . --ignore ./src/graphQL --ignore ./src/grpc --ext ts --exec npx tsx ./src/restAPI/index.ts",
     "startGraphQL": "nodemon --watch ./src/graphQL --ext ts --exec npx tsx ./src/graphQL/index.ts",
-    "startGrpcServer": "nodemon --watch ./src/grpc --ext ts --exec npx tsx ./src/grpc/server.ts",
+    "startGrpcServer": "nodemon --watch ./src/gRPC --ext ts --exec npx tsx ./src/gRPC/server.ts",
     "startGrpcClient": "npx tsx ./src/grpc/client.ts",
     "startDocs": "cd ./src/property-docs && npm install && npm start",
     "dev": "concurrently \"npm run startRestApi\" \"npm run startGraphQL\" \"npm run startGrpcServer\" "
